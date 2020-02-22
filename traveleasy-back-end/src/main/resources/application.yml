@@ -1,2 +1,22 @@
+spring:
+  profiles:
+    active: "dev"
+
 server:
   port: 3001
+  servlet:
+    context-path: /api
+
+---
+spring:
+  profiles: "dev"
+  datasource:
+    url: jdbc:mysql://localhost:3002/db
+    username: user
+    password: password
+
+  flyway:
+    url: jdbc:mysql://localhost:3002
+    user: user
+    password: password
+    schemas: db
