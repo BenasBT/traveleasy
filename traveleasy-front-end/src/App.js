@@ -1,12 +1,9 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import Header from './components/header';
-import makeStyles from "@material-ui/core/styles/makeStyles";
 import {MuiThemeProvider,createMuiTheme} from "@material-ui/core";
-import {amber, blue, lightGreen, red, yellow} from "@material-ui/core/colors";
-import {dark} from "@material-ui/core/styles/createPalette";
+import {amber, red} from "@material-ui/core/colors";
 import Home from "./pages/home";
 import Activities from "./pages/activities";
 import Modal from "./components/modal";
@@ -30,19 +27,17 @@ function App() {
 
   });
 
-  console.log(theme);
-
   return (
 
     <MuiThemeProvider theme={theme}>
-    <Router>
-      <Header/>
-      <Switch>
-        <Modal/>
-        <Route exact path="/" component={Home} />
-        <Route exact path="/activities" component={Activities} />
-      </Switch>
-    </Router>
+      <Modal/>
+      <Router>
+        <Header/>
+        <Switch>
+          <Route  path="/" component={Home} />
+          <Route  path="/activities" component={Activities} />
+        </Switch>
+      </Router>
     </MuiThemeProvider>
 
   );
