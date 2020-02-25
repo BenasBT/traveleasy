@@ -1,5 +1,6 @@
 import { API_BASE_URL, POLL_LIST_SIZE, ACCESS_TOKEN } from '../constants';
 import apiClient from './apiClient.js'
+import {setUser} from "../redux/actions";
 
 
 export const login = async ({password,usernameOrEmail}) =>{
@@ -14,9 +15,22 @@ export const login = async ({password,usernameOrEmail}) =>{
         console.log("Error login");
     }
 
+};
 
+export const getCurrentUser = async () =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res = await apiClient.get("/auth/me",{headers});
+
+        return res.data;
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
 
 };
+
 
 export const register = async ({username,email,password}) =>{
     console.log(`password ${password} username ${username} email ${email}`);
@@ -28,7 +42,5 @@ export const register = async ({username,email,password}) =>{
         console.log(e);
         console.log("Error login");
     }
-
-
 
 };

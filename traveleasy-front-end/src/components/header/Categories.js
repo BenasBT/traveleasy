@@ -31,7 +31,7 @@ export default function Categories ({show}){
     let onActivityClick = (event) =>{
         event.preventDefault();
         console.log(event);
-    }
+    };
     /*TO DO: fix for too many activities*/
     return(
 

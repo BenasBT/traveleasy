@@ -10,9 +10,12 @@ import Categories from './Categories'
 import {useHistory} from "react-router-dom";
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import Login from "../login";
+
 import LoginPage from "../../pages/loginPage";
 import {ACCESS_TOKEN} from '../../constants';
+import CartDrawer from "../drawers/cart/CartDrawer";
+import UserDrawer from "../drawers/user/UserDrawer";
+import {useDispatch, useSelector} from "react-redux";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -30,17 +33,16 @@ export default function Header(){
 
     const classes = useStyles();
     const [showCategories, setShowCategories] = useState(false);
-    const [isLoged, setIsLoged] = useState(false);
+    const [openCart, setOpenCart] = useState(false);
+    const [openUser, setOpenUser] = useState(false);
     const history = useHistory();
     const [openLogin, setOpenLogin] = React.useState(false);
 
-
-
+    const currentUser = useSelector(state => state.currentUserReducer);
 
     let onMouseEnter = ()=> {
 
         if(!showCategories && !window.location.href.includes("/activities")){
-            console.log("SHOW");
             setShowCategories(true);
             setTimeout(()=>  setShowCategories(false), 3000);
         }
@@ -57,16 +59,23 @@ export default function Header(){
         history.push("/");
     };
 
-    let onProfileClick = (event) =>{
-        event.preventDefault();
-        console.log("onProfileClick");
+    let onProfileClick = () =>{
+        setOpenUser(!openUser);
     };
 
 
     let onCartClick = (event) =>{
         event.preventDefault();
         console.log("onCartClick");
+        setOpenCart(!openCart);
     };
+
+    let onCartClose = (event) =>{
+        event.preventDefault();
+        console.log("onCartClick");
+        setOpenCart(false);
+    };
+
 
     let onLoginClick = (event) =>{
         event.preventDefault();
@@ -97,11 +106,11 @@ export default function Header(){
                                 onMouseEnter={onMouseEnter}>
                         Activities
                     </Typography>
-                    {localStorage.getItem(ACCESS_TOKEN).includes("Bearer") ? /*TODO: Change to redux */
+                    {currentUser ? /*TODO: Change to redux */
                         <div>
                             <IconButton edge="start" className={classes.homeButton}
                                         color="inherit" aria-label="menu"
-                                        onClick={onCartClick}>
+                                        onClick={(event =>{ onCartClick(event)}) }>
                                 <ShoppingCartIcon />
                             </IconButton>
                             <IconButton edge="start" className={classes.homeButton}
@@ -119,8 +128,10 @@ export default function Header(){
                 </Toolbar>
             </AppBar>
             <Categories show={showCategories} />
-
             <LoginPage  open={openLogin} handleClose={onCloseLogin}/>
+
+            <CartDrawer open={openCart} handleClose={onCartClick}/>
+            <UserDrawer open={openUser} handleClose={onProfileClick}/>
         </div>
     );
 }

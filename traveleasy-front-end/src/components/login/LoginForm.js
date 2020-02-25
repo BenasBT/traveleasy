@@ -2,6 +2,9 @@ import React, {useState} from "react";
 import '../../pages/loginPage/login.css'
 import {login} from  '../../utils/APIUtils.js'
 import { useHistory } from 'react-router-dom'
+import {getCurrentUser} from "../../utils/APIUtils";
+import {useDispatch} from "react-redux";
+import {setUser} from "../../redux/actions";
 
 export default function LoginForm({close}) {
 
@@ -9,21 +12,25 @@ export default function LoginForm({close}) {
     const [password,setPassword] = useState("");
 
     const history = useHistory();
+    const dispatch = useDispatch();
 
     let submitLogin =  (event)=>{
         event.preventDefault();
-        login({password, usernameOrEmail}).then(r => close(event));
+        login({password, usernameOrEmail});
+        const user = getCurrentUser();
+        user.then(r => { dispatch(setUser(r)) });
+        close(event);
 
     };
 
-    let handleChenges = (event) =>{
+    let handleChanges = (event) =>{
         const target = event.target;
         const inputName = target.name;
         const inputValue = target.value;
 
         switch (inputName) {
             case "usernameOrEmail":
-                setUsernameOrEmail( inputValue);;
+                setUsernameOrEmail( inputValue);
                 break;
             case "password" :
                 setPassword(inputValue);
@@ -45,7 +52,7 @@ export default function LoginForm({close}) {
                         name="usernameOrEmail"
                         className="login-input"
                         placeholder="Username Or Email"
-                        onChange={(event => handleChenges(event))}
+                        onChange={(event => handleChanges(event))}
                     />
 
                 </div>
@@ -57,7 +64,7 @@ export default function LoginForm({close}) {
                         name="password"
                         className="login-input"
                         placeholder="Password"
-                        onChange={(event => handleChenges(event))}
+                        onChange={(event => handleChanges(event))}
                     />
                 </div>
 
