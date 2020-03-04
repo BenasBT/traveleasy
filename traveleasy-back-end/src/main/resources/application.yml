@@ -7,6 +7,9 @@ server:
   servlet:
     context-path: /api
 
+security:
+  oauth2:
+
 ---
 spring:
   profiles: "dev"

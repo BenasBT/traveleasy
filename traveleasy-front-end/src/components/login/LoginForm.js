@@ -23,6 +23,24 @@ export default function LoginForm({close}) {
 
     };
 
+    let googleOauth2 =  (event)=>{
+        event.preventDefault();
+        login({password, usernameOrEmail});
+        const user = getCurrentUser();
+        user.then(r => { dispatch(setUser(r)) });
+        close(event);
+
+    };
+
+    let facebookOauth2 =  (event)=>{
+        event.preventDefault();
+        login({password, usernameOrEmail});
+        const user = getCurrentUser();
+        user.then(r => { dispatch(setUser(r)) });
+        close(event);
+
+    };
+
     let handleChanges = (event) =>{
         const target = event.target;
         const inputName = target.name;
@@ -74,6 +92,20 @@ export default function LoginForm({close}) {
                     onClick={submitLogin}
 
                 >Login</button>
+
+                <button
+                    type="button"
+                    className="login-btn-google"
+                    onClick={googleOauth2}
+
+                >Google</button>
+
+                <button
+                    type="button"
+                    className="login-btn-facebook"
+                    onClick={facebookOauth2}
+
+                >Facebook</button>
 
             </div>
         </div>
