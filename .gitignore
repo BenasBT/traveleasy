@@ -1,0 +1,7 @@
+.idea/
+localdb/.mysql-data/
+traveleasy-back-end/.gradle/
+traveleasy-back-end/.idea/
+traveleasy-back-end/build/
+traveleasy-back-end/gradle/.gradle/
+traveleasy-front-end/node_modules/

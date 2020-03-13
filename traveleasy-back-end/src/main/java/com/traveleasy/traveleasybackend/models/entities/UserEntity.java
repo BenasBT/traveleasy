@@ -1,23 +1,33 @@
 package com.traveleasy.traveleasybackend.models.entities;
 
+import com.traveleasy.traveleasybackend.models.AuthProvider;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "users")
+@Table(name = "users",uniqueConstraints = {
+        @UniqueConstraint(columnNames = "email")
+})
 public class UserEntity extends AbstractEntity{
 
-    @Column(name = "username")
-    private String username;
+    @Column(name = "name",nullable = false)
+    private String name;
 
-    @Column(name = "email")
+    @Email
+    @Column(name = "email",nullable = false)
     private String email;
+
+
+    @Column(name = "email_verified",nullable = false)
+    private Boolean emailVerified = false;
 
     @Column(name = "password")
     private String password;
@@ -28,8 +38,18 @@ public class UserEntity extends AbstractEntity{
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleEntity> roleEntities = new HashSet<>();
 
-    public UserEntity(String username, String email, String password) {
-        this.username =username;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
+
+    @Column(name = "provider_id")
+    private String providerId;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    public UserEntity(String name, String email, String password) {
+        this.name =name;
         this.email = email;
         this.password =password;
     }

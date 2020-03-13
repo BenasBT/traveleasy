@@ -15,21 +15,22 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByEmail(String email);
 
   @Query(value =
-    "SELECT * FROM users WHERE username=:username or email=:email",
+    "SELECT * FROM users WHERE name=:name or email=:email",
     nativeQuery = true)
-    Optional<UserEntity> findByUsernameOrEmail(
-          @Param("username") String username,
+    Optional<UserEntity> findByNmeOrEmail(
+          @Param("name") String name,
           @Param("email") String email);
 
   @Query(value =
-    "SELECT * FROM users WHERE username=:username LIMIT 1",
+    "SELECT * FROM users WHERE name=:name LIMIT 1",
     nativeQuery = true)
-    Optional<UserEntity> existsByUsername(String username);
+    Optional<UserEntity> existsByName(String name);
 
   @Query(value =
     "SELECT * FROM users WHERE email=:email LIMIT 1",
     nativeQuery = true)
     Optional<UserEntity> existsByEmail(String email);
+
 
 
 }

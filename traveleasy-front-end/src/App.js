@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
-import Header from './components/header';
+import Header from './common/header';
 import {MuiThemeProvider,createMuiTheme} from "@material-ui/core";
 import {amber, red} from "@material-ui/core/colors";
 import Home from "./pages/home";
@@ -10,7 +10,7 @@ import Modal from "./components/modal";
 import {createStore, useDispatch, useSelector} from "react-redux";
 import {getCurrentUser} from "./utils/APIUtils";
 import {setUser} from "./redux/actions";
-
+import OAuth2RedirectHandler from "./user/oauth2/OAuth2RedirectHandler";
 
 
 function App() {
@@ -30,7 +30,8 @@ function App() {
 
   });
   const dispatch = useDispatch();
-  getCurrentUser().then(r => { dispatch(setUser(r)) });
+
+  getCurrentUser(dispatch).then();
   return (
 
     <MuiThemeProvider theme={theme}>
@@ -38,8 +39,9 @@ function App() {
       <Router>
         <Header/>
         <Switch>
-          <Route  path="/" component={Home} />
-          <Route  path="/activities" component={Activities} />
+          <Route path="/activities" component={Activities} />
+          <Route path="/oauth2/redirect" component={OAuth2RedirectHandler}/>
+          <Route path="/" component={Home} />
         </Switch>
       </Router>
     </MuiThemeProvider>

@@ -1,9 +1,17 @@
+
+
+
 CREATE TABLE users (
    id BIGINT NOT NULL AUTO_INCREMENT,
-   email varchar(255) NOT NULL,
-   password varchar(255) NOT NULL,
-   username varchar(255) NOT NULL,
-   PRIMARY KEY (id)
+   email varchar(255) NOT NULL UNIQUE,
+   email_verified BIT NOT NULL,
+   password varchar(255),
+   name varchar(255) NOT NULL,
+   image_url varchar(255),
+   provider varchar(255),
+   provider_id varchar(255),
+   PRIMARY KEY (id),
+   UNIQUE (email)
 );
 
 CREATE TABLE role (

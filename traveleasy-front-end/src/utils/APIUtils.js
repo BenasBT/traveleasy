@@ -1,13 +1,13 @@
 import { API_BASE_URL, POLL_LIST_SIZE, ACCESS_TOKEN } from '../constants';
 import apiClient from './apiClient.js'
-import {setUser} from "../redux/actions";
+import {setUser} from "../redux/actions/index";
 
 
-export const login = async ({password,usernameOrEmail}) =>{
-    console.log(`password ${password} usernameOrEmail ${usernameOrEmail}`);
+export const login = async ({password,email}) =>{
     try {
-        const res = await apiClient.post("/auth/login",{usernameOrEmail,password});
-        let token = res.data;
+        const res = await apiClient.post("/auth/login",{email,password});
+        let token = res.data.accessToken;
+
         localStorage.setItem(ACCESS_TOKEN,"Bearer " + token); // TODO: change to redux
 
     }catch (e) {
@@ -17,12 +17,12 @@ export const login = async ({password,usernameOrEmail}) =>{
 
 };
 
-export const getCurrentUser = async () =>{
+export const getCurrentUser = async (dispatch) =>{
     try {
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
-        const res = await apiClient.get("/auth/me",{headers});
-
-        return res.data;
+        const res =await apiClient.get("/user/me",{headers});
+        const user = res.data;
+        dispatch(setUser(user))
     }catch (e) {
         console.log(e);
         console.log("Error login");
@@ -32,11 +32,10 @@ export const getCurrentUser = async () =>{
 };
 
 
-export const register = async ({username,email,password}) =>{
-    console.log(`password ${password} username ${username} email ${email}`);
+export const register = async ({name,email,password}) =>{
     try {
-        const res = await apiClient.post("/auth/register",{username,email,password});
-        await login({password, usernameOrEmail: username});
+        const res = await apiClient.post("/auth/register",{name,email,password});
+        await login({password, name: name});
 
     }catch (e) {
         console.log(e);
