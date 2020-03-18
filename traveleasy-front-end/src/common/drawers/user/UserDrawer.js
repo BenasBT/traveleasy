@@ -28,11 +28,24 @@ export default function UserDrawer ({open,handleClose}) {
     const currentUser = useSelector(state => state.currentUserReducer);
     const dispatch = useDispatch();
 
-    let onLogout = () => {
+    let onLogout = (event) => {
+        event.preventDefault();
         localStorage.removeItem(ACCESS_TOKEN);
         dispatch(clearUser())
         console.log("Logout");
         handleClose();
+    };
+
+    let onAdmin = (event) => {
+        event.preventDefault();
+        localStorage.removeItem(ACCESS_TOKEN);
+        dispatch(clearUser())
+        console.log("onAdmin");
+    };
+
+    let onMyProfile = (event) => {
+        event.preventDefault();
+        console.log("onMyProfile");
     };
 
     let isAdmin = (currentUser) => {
@@ -52,7 +65,7 @@ export default function UserDrawer ({open,handleClose}) {
         >
             <List>
                 <ListItem>
-                    <Button onClick={onLogout}>
+                    <Button onClick={onMyProfile}>
                         <Typography align="center" className={classes.title}>
                             Profile
                         </Typography>
@@ -60,7 +73,7 @@ export default function UserDrawer ({open,handleClose}) {
                 </ListItem>
                 {isAdmin(currentUser) ?
                 <ListItem>
-                    <Button onClick={onLogout}>
+                    <Button onClick={onAdmin}>
                         <Typography align="center" className={classes.title}>
                             Admin
                         </Typography>

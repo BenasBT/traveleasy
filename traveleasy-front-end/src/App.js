@@ -11,6 +11,9 @@ import {createStore, useDispatch, useSelector} from "react-redux";
 import {getCurrentUser} from "./utils/APIUtils";
 import {setUser} from "./redux/actions";
 import OAuth2RedirectHandler from "./user/oauth2/OAuth2RedirectHandler";
+import MyProfile from "./pages/profile/MyProfile";
+import Profile from "./pages/profile/Profile";
+import AdminPage from './pages/admin'
 
 
 function App() {
@@ -41,6 +44,9 @@ function App() {
         <Switch>
           <Route path="/activities" component={Activities} />
           <Route path="/oauth2/redirect" component={OAuth2RedirectHandler}/>
+          <Route path="/admin" component={AdminPage}/>
+          <Route path="/Profile/me" component={MyProfile}/>
+          <Route path="/Profile/:id" component={Profile} />
           <Route path="/" component={Home} />
         </Switch>
       </Router>

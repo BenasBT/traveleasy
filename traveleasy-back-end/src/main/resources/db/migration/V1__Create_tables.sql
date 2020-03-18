@@ -20,13 +20,13 @@ CREATE TABLE role (
   PRIMARY KEY (id)
 );
 
-insert into role (id,name ) value (0,'ROLE_ADMIN');
-insert into role (id,name ) value (1,'ROLE_USER');
-
 CREATE TABLE user_roles (
   user_id BIGINT NOT NULL REFERENCES users(id),
   role_id BIGINT NOT NULL REFERENCES role(id),
   PRIMARY KEY (user_id,role_id)
 
 );
+
+insert into role (id,name ) value (0,'ROLE_ADMIN');
+insert into role (id,name ) value (1,'ROLE_USER');
 

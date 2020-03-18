@@ -2,7 +2,10 @@ package com.traveleasy.traveleasybackend.security.oauth2;
 
 import com.traveleasy.traveleasybackend.exeption.OAuth2AuthenticationProcessingException;
 import com.traveleasy.traveleasybackend.models.AuthProvider;
+import com.traveleasy.traveleasybackend.models.RoleName;
+import com.traveleasy.traveleasybackend.models.entities.RoleEntity;
 import com.traveleasy.traveleasybackend.models.entities.UserEntity;
+import com.traveleasy.traveleasybackend.repositories.RoleRepository;
 import com.traveleasy.traveleasybackend.repositories.UserRepository;
 import com.traveleasy.traveleasybackend.security.UserPrincipal;
 import com.traveleasy.traveleasybackend.security.oauth2.user.OAuth2UserInfo;
@@ -18,6 +21,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Collections;
 import java.util.Optional;
 @Slf4j
 @Service
@@ -25,6 +29,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    RoleRepository roleRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
@@ -67,14 +74,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private UserEntity registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
-        UserEntity user = new UserEntity();
+        UserEntity userEntity = new UserEntity();
         log.error("registerNewUser");
-        user.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
-        user.setProviderId(oAuth2UserInfo.getId());
-        user.setName(oAuth2UserInfo.getName());
-        user.setEmail(oAuth2UserInfo.getEmail());
-        user.setImageUrl(oAuth2UserInfo.getImageUrl());
-        return userRepository.save(user);
+        RoleEntity RoleEntity = roleRepository.findByName(RoleName.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("User Role not set."));
+
+        userEntity.setRoleEntities(Collections.singleton(RoleEntity));
+
+        userEntity.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
+        userEntity.setProviderId(oAuth2UserInfo.getId());
+        userEntity.setName(oAuth2UserInfo.getName());
+        userEntity.setEmail(oAuth2UserInfo.getEmail());
+        userEntity.setImageUrl(oAuth2UserInfo.getImageUrl());
+        return userRepository.save(userEntity);
     }
 
     private UserEntity updateExistingUser(UserEntity existingUser, OAuth2UserInfo oAuth2UserInfo) {
