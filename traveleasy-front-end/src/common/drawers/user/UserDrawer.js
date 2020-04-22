@@ -11,6 +11,7 @@ import Toolbar from "@material-ui/core/Toolbar";
 import {useDispatch, useSelector} from "react-redux";
 import {ACCESS_TOKEN} from "../../../constants";
 import {clearUser, setUser} from "../../../redux/actions";
+import {useHistory} from "react-router-dom";
 
 
 const useStyles = makeStyles({
@@ -27,6 +28,7 @@ export default function UserDrawer ({open,handleClose}) {
     const classes = useStyles();
     const currentUser = useSelector(state => state.currentUserReducer);
     const dispatch = useDispatch();
+    const history = useHistory();
 
     let onLogout = (event) => {
         event.preventDefault();
@@ -38,14 +40,17 @@ export default function UserDrawer ({open,handleClose}) {
 
     let onAdmin = (event) => {
         event.preventDefault();
-        localStorage.removeItem(ACCESS_TOKEN);
-        dispatch(clearUser())
+
         console.log("onAdmin");
+        history.push("/admin");
+
     };
 
     let onMyProfile = (event) => {
         event.preventDefault();
         console.log("onMyProfile");
+        history.push("/profile/me");
+
     };
 
     let isAdmin = (currentUser) => {

@@ -45,8 +45,8 @@ function App() {
           <Route path="/activities" component={Activities} />
           <Route path="/oauth2/redirect" component={OAuth2RedirectHandler}/>
           <Route path="/admin" component={AdminPage}/>
-          <Route path="/Profile/me" component={MyProfile}/>
-          <Route path="/Profile/:id" component={Profile} />
+          <Route path="/profile/me" component={MyProfile}/>
+          <Route path="/profile/:id" component={Profile} />
           <Route path="/" component={Home} />
         </Switch>
       </Router>

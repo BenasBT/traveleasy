@@ -17,6 +17,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
+// TODO: Pakeisti i kortas
 export default function CartDrawer ({open,handleClose}) {
     const classes = useStyles();
 
