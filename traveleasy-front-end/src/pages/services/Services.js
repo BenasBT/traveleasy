@@ -4,7 +4,7 @@ export default function Activities() {
 
     return(
 
-        <p>Activities Page</p>
+        <p>Services Page</p>
     );
 
 }

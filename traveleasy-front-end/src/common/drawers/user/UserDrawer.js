@@ -53,6 +53,13 @@ export default function UserDrawer ({open,handleClose}) {
 
     };
 
+    let onAddService = (event) => {
+        event.preventDefault();
+        console.log("onAddService");
+        history.push("/service/add");
+
+    };
+
     let isAdmin = (currentUser) => {
         if(currentUser) {
             let a = currentUser.roleEntities;
@@ -73,6 +80,13 @@ export default function UserDrawer ({open,handleClose}) {
                     <Button onClick={onMyProfile}>
                         <Typography align="center" className={classes.title}>
                             Profile
+                        </Typography>
+                    </Button>
+                </ListItem>
+                <ListItem>
+                    <Button onClick={onAddService}>
+                        <Typography align="center" className={classes.title}>
+                            Add Service
                         </Typography>
                     </Button>
                 </ListItem>

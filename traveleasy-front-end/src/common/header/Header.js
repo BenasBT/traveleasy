@@ -50,7 +50,7 @@ export default function Header(){
 
     let onActivityClick = (event) =>{
         event.preventDefault();
-        history.push("/activities");
+        history.push("/service");
 
     };
 
@@ -104,7 +104,7 @@ export default function Header(){
                     <Typography align="center" variant="h6" className={classes.title}
                                 onClick={onActivityClick}
                                 onMouseEnter={onMouseEnter}>
-                        Activities
+                        Services
                     </Typography>
                     {currentUser ? /*TODO: Change to redux */
                         <div>

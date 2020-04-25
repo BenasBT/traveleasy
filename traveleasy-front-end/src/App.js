@@ -5,7 +5,7 @@ import Header from './common/header';
 import {MuiThemeProvider,createMuiTheme} from "@material-ui/core";
 import {amber, red} from "@material-ui/core/colors";
 import Home from "./pages/home";
-import Activities from "./pages/activities";
+import Services from "./pages/services";
 import Modal from "./components/modal";
 import {createStore, useDispatch, useSelector} from "react-redux";
 import {getCurrentUser} from "./utils/APIUtils";
@@ -13,7 +13,9 @@ import {setUser} from "./redux/actions";
 import OAuth2RedirectHandler from "./user/oauth2/OAuth2RedirectHandler";
 import MyProfile from "./pages/profile/MyProfile";
 import Profile from "./pages/profile/Profile";
-import AdminPage from './pages/admin'
+import AdminPage from './pages/admin';
+import Service from './pages/service/Service';
+import AddService from './pages/service/AddService';
 
 
 function App() {
@@ -42,11 +44,13 @@ function App() {
       <Router>
         <Header/>
         <Switch>
-          <Route path="/activities" component={Activities} />
           <Route path="/oauth2/redirect" component={OAuth2RedirectHandler}/>
           <Route path="/admin" component={AdminPage}/>
           <Route path="/profile/me" component={MyProfile}/>
           <Route path="/profile/:id" component={Profile} />
+          <Route path="/service/add" component={AddService} />
+          <Route path="/service/:id" component={Service} />
+          <Route path="/service" component={Services} />
           <Route path="/" component={Home} />
         </Switch>
       </Router>
