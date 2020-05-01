@@ -46,6 +46,13 @@ export default function UserDrawer ({open,handleClose}) {
 
     };
 
+    let onMyServices = (event) => {
+        event.preventDefault();
+
+        history.push("/services/my");
+
+    };
+
     let onMyProfile = (event) => {
         event.preventDefault();
         console.log("onMyProfile");
@@ -71,6 +78,16 @@ export default function UserDrawer ({open,handleClose}) {
         return false;
     };
 
+    let isProvider = (currentUser) => {
+        if(currentUser) {
+            let a = currentUser.roleEntities;
+            for(let i = 0; i < currentUser.roleEntities.length; i ++){
+                if(a[i].name === 'ROLE_PROVIDER')
+                    return true;
+            }
+        }
+        return false;
+    };
     const sideList =
         <div
             className={classes.list}
@@ -90,6 +107,16 @@ export default function UserDrawer ({open,handleClose}) {
                         </Typography>
                     </Button>
                 </ListItem>
+                {isProvider(currentUser) ?
+                    <ListItem>
+                        <Button onClick={onMyServices}>
+                            <Typography align="center" className={classes.title}>
+                                My services
+                            </Typography>
+                        </Button>
+                    </ListItem>
+                    : null
+                }
                 {isAdmin(currentUser) ?
                 <ListItem>
                     <Button onClick={onAdmin}>

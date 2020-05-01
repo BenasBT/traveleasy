@@ -15,6 +15,7 @@ import MyProfile from "./pages/profile/MyProfile";
 import Profile from "./pages/profile/Profile";
 import AdminPage from './pages/admin';
 import Service from './pages/service/Service';
+import ServicesMy from './pages/services/ServicesMy';
 import AddService from './pages/service/AddService';
 
 
@@ -48,9 +49,13 @@ function App() {
           <Route path="/admin" component={AdminPage}/>
           <Route path="/profile/me" component={MyProfile}/>
           <Route path="/profile/:id" component={Profile} />
+
+          <Route path="/services/my" component={ServicesMy} />
+          <Route path="/services" component={Services} />
+
           <Route path="/service/add" component={AddService} />
           <Route path="/service/:id" component={Service} />
-          <Route path="/service" component={Services} />
+
           <Route path="/" component={Home} />
         </Switch>
       </Router>

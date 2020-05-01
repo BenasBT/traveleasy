@@ -7,6 +7,6 @@ const curentUserReducer = (state = null, action) =>{
         default:
             return state
     }
-}
+};
 
 export default curentUserReducer;

@@ -1,6 +1,9 @@
-import React from "react";
+import React, {useState} from "react";
 
-export default function Activities() {
+export default function Services() {
+
+    const [services, setServices] = useState([]);
+
 
     return(
 

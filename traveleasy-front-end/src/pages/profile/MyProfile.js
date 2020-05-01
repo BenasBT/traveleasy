@@ -16,11 +16,6 @@ export default function MyProfile() {
 
     const classes = useStyles();
 
-    let test =  (event)=>{
-        event.preventDefault();
-        console.log("Test");
-    }
-
     return(
 
         <div>

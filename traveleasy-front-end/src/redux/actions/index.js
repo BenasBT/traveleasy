@@ -10,3 +10,11 @@ export const clearUser = () =>{
         type:'SIGN_OUT',
     }
 };
+
+export const setCategories = (categories) =>{
+    return{
+        type:'CATEGORIES',
+        categories: categories
+    }
+};
+

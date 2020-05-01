@@ -19,7 +19,6 @@ export default function LoginForm({close}) {
     let submitLogin =  (event)=>{
 
         event.preventDefault();
-        console.log("1");
         login({password, email}).then(
             () => getCurrentUser(dispatch)
 

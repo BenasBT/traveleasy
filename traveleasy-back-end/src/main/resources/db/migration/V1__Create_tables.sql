@@ -1,6 +1,3 @@
-
-
-
 CREATE TABLE users (
    id BIGINT NOT NULL AUTO_INCREMENT,
    email varchar(255) NOT NULL UNIQUE,
@@ -24,9 +21,62 @@ CREATE TABLE user_roles (
   user_id BIGINT NOT NULL REFERENCES users(id),
   role_id BIGINT NOT NULL REFERENCES role(id),
   PRIMARY KEY (user_id,role_id)
-
 );
 
-insert into role (id,name ) value (0,'ROLE_ADMIN');
-insert into role (id,name ) value (1,'ROLE_USER');
+CREATE TABLE category (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL,
+  valid bool,
+  PRIMARY KEY (id)
+);
 
+CREATE TABLE photos (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL,
+  dir varchar(255) NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE service (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  user_id BIGINT NOT NULL REFERENCES users(id),
+  name varchar(255) NOT NULL,
+  description varchar(255),
+  price double,
+  start_time time,
+  end_time time,
+  start_date date,
+  end_date date,
+  min_people_count integer,
+  max_people_count integer,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE service_category (
+  service_id BIGINT NOT NULL REFERENCES service(id),
+  category_id BIGINT NOT NULL REFERENCES category(id),
+  PRIMARY KEY (service_id,category_id)
+);
+
+CREATE TABLE service_photo (
+  service_id  BIGINT NOT NULL REFERENCES service(id),
+  photo_id  BIGINT NOT NULL REFERENCES photos(id),
+  PRIMARY KEY (service_id,photo_id)
+);
+
+
+insert into role (id,name) value (0,'ROLE_ADMIN');
+insert into role (id,name) value (1,'ROLE_USER');
+insert into role (id,name) value (2,'ROLE_PROVIDER');
+
+insert into category (id,name,valid) value (1,'Takeout Food',true);
+insert into category (id,name,valid) value (2,'Indoors Food',true);
+insert into category (id,name,valid) value (3,'Transfer Of Items',true);
+insert into category (id,name,valid) value (4,'Delivery',true);
+insert into category (id,name,valid) value (5,'Transportation Of People',true);
+insert into category (id,name,valid) value (6,'Premises',true);
+insert into category (id,name,valid) value (7,'Activities',true);
+insert into category (id,name,valid) value (8,'Rent',true);
+
+
+insert into category (id,name,valid) value (999,'Other',true);

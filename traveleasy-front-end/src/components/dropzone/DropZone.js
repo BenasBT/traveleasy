@@ -63,9 +63,8 @@ const img = {
 };
 
 
-export default function DropZone(props) {
-    const [files, setFiles] = useState([]);
-    const [count, setCount] = useState(0);
+export default function DropZone({files,setFiles}) {
+
     const [state, updateState] = useState(false);
 
     const {getRootProps,
@@ -98,7 +97,6 @@ export default function DropZone(props) {
     ]);
 
     const updateThumbs = (files) =>{
-        console.log('updateThumbs');
         let t = files.map(file => (
             <div style={thumb} key={file.name} onClick={ (e) => removeImage({e,file})}>
                 <div style={thumbInner}>
@@ -114,11 +112,9 @@ export default function DropZone(props) {
     };
 
     let thumbs = updateThumbs(files);
-    console.log(thumbs);
 
     let removeImage = ({e,file}) =>{
         e.preventDefault();
-        console.log("remove image");
         let index = files.indexOf(file);
 
         if (index > -1) {
@@ -137,7 +133,6 @@ export default function DropZone(props) {
         files.forEach(file => URL.revokeObjectURL(file.preview));
     }, [files]);
 
-    console.log("last line");
 
     return (
         <section className="container">

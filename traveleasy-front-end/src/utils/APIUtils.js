@@ -43,3 +43,50 @@ export const register = async ({name,email,password}) =>{
     }
 
 };
+
+export const getAllCategories = async () =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("/category",{headers});
+        return res.data;
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
+
+export const addService = async (addRequest) =>{
+    try {
+        const headers = {
+            'Authorization':localStorage.getItem(ACCESS_TOKEN)
+        };
+        const res = await apiClient.post("/service/add",addRequest,{headers});
+        let responce = res;
+        console.log(responce);
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error adding service");
+    }
+
+};
+
+export const addServiceFiles = async (addRequestFiles) =>{
+    try {
+        console.log(addRequestFiles);
+
+        const headers = {
+            'Authorization':localStorage.getItem(ACCESS_TOKEN)
+        };
+        const res = await apiClient.post("/service/add",addRequestFiles,{headers});
+        let responce = res;
+        console.log(responce);
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error adding service");
+    }
+
+};

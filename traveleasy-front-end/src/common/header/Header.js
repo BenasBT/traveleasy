@@ -50,7 +50,7 @@ export default function Header(){
 
     let onActivityClick = (event) =>{
         event.preventDefault();
-        history.push("/service");
+        history.push("/services");
 
     };
 
