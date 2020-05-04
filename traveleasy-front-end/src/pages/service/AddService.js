@@ -11,8 +11,9 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
 import {getAllCategories,
-        addService,
-        addServiceFiles} from '../../utils/APIUtils'
+        addServiceFiles,
+        getPhoto} from '../../utils/APIUtils'
+import {useHistory} from "react-router-dom";
 
 
 export default function AddService() {
@@ -39,7 +40,7 @@ export default function AddService() {
 
     const [files, setFiles] = useState([]);
 
-
+    const history = useHistory();
 
     const useStyles = makeStyles((theme) => ({
         root: {
@@ -50,9 +51,11 @@ export default function AddService() {
         },
     }));
 
+
+
+    //console.log(new File(myBlob, "filename"));
     let submit = (event) => {
         event.preventDefault();
-        console.log("submit");
 
         let checkedCategories = categories.filter( category => category.checked)
             .map((category => ({id: category.id, name: category.name})));
@@ -75,40 +78,32 @@ export default function AddService() {
             min_people_count: minPplCnt,
             max_people_count: maxPplCnt,
         };
-        let addRequestFiles= {files:files};
 
-
-        // const json = JSON.stringify(addRequestFiles);
-        // const blob = new Blob([json], {
-        //     type: 'application/json'
-        // });
-        // const data = new FormData();
-        //
-        // data.append("document", blob);
-
-        if(addRequest.max_people_count === 0){
-            addRequest.max_people_count ="";
+        if(addRequest.max_people_count === ''){
+            addRequest.max_people_count =0;
         }
-        if(addRequest.min_people_count === 0){
-            addRequest.min_people_count ="";
+        if(addRequest.min_people_count === ''){
+            addRequest.min_people_count =0;
         }
-        if(addRequest.price === 0){
-            addRequest.min_people_count ="";
+        if(addRequest.price === ''){
+            addRequest.price =0;
+        }
+        if(addRequest.start_date == null){
+            addRequest.start_date = "";
+        }
+        if(addRequest.end_date == null){
+            addRequest.start_date = "";
         }
 
         const formData = new FormData();
 
         for(let i = 0; i< files.length; i++) {
-            console.log(files[i]);
             formData.append('file', files[i]);
         }
 
         formData.set('data',JSON.stringify(addRequest));
 
-        console.log(formData);
-        console.log(Array.from(formData));
-
-        addServiceFiles(formData).then( r => console.log(r));
+        addServiceFiles(formData).then();
 
 
         // addService(addRequest).then(
@@ -121,7 +116,7 @@ export default function AddService() {
         // );
 
 
-
+        //history.push("/");
 
     };
 
@@ -204,8 +199,6 @@ export default function AddService() {
             categories.find((element) => element.name === value).checked =
                 !categories.find((element) => element.name === value).checked ;
         }
-
-        console.log(categories);
     };
 
     let mapCategories  = () =>{
@@ -240,7 +233,6 @@ export default function AddService() {
         );
     }, []);
 
-    console.log(categories);
 
     let categorieElements = mapCategories();
 
@@ -309,6 +301,7 @@ export default function AddService() {
                     <TextField
                         id="sDate"
                         label="Start Date"
+                        value={sDate}
                         onChange={(event) => onChange(event)}
                         type="date"
                         className={classes.textField}

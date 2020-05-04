@@ -36,7 +36,7 @@ export default function Header(){
     const [openCart, setOpenCart] = useState(false);
     const [openUser, setOpenUser] = useState(false);
     const history = useHistory();
-    const [openLogin, setOpenLogin] = React.useState(false);
+    const [openLogin, setOpenLogin] = useState(false);
 
     const currentUser = useSelector(state => state.currentUserReducer);
 
@@ -85,7 +85,6 @@ export default function Header(){
 
     let onCloseLogin = (event) =>{
         event.preventDefault();
-        console.log("onCloseLogin");
         setOpenLogin(false);
     };
 

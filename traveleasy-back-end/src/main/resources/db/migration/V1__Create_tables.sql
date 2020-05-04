@@ -32,6 +32,7 @@ CREATE TABLE category (
 
 CREATE TABLE photos (
   id BIGINT NOT NULL AUTO_INCREMENT,
+  service_id BIGINT,
   name varchar(255) NOT NULL,
   dir varchar(255) NOT NULL,
   PRIMARY KEY (id)
@@ -58,11 +59,11 @@ CREATE TABLE service_category (
   PRIMARY KEY (service_id,category_id)
 );
 
-CREATE TABLE service_photo (
-  service_id  BIGINT NOT NULL REFERENCES service(id),
-  photo_id  BIGINT NOT NULL REFERENCES photos(id),
-  PRIMARY KEY (service_id,photo_id)
-);
+# CREATE TABLE service_photo (
+#   service_id  BIGINT NOT NULL REFERENCES service(id),
+#   photo_id  BIGINT NOT NULL REFERENCES photos(id),
+#   PRIMARY KEY (service_id,photo_id)
+# );
 
 
 insert into role (id,name) value (0,'ROLE_ADMIN');

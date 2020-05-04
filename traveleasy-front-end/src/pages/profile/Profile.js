@@ -37,7 +37,6 @@ export default function Profile() {
     let {id} = useParams();
 
     const currentUser = useSelector(state => state.currentUserReducer);
-    console.log(currentUser)
     const classes = useStyles();
 
     return(

@@ -1,18 +1,15 @@
 import React from "react";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import Toolbar from "@material-ui/core/Toolbar";
 import {useDispatch, useSelector} from "react-redux";
 import {ACCESS_TOKEN} from "../../../constants";
-import {clearUser, setUser} from "../../../redux/actions";
+import {clearUser} from "../../../redux/actions";
 import {useHistory} from "react-router-dom";
-
+import {isAdmin} from  '../../../utils/Utils'
 
 const useStyles = makeStyles({
     list: {
@@ -67,16 +64,6 @@ export default function UserDrawer ({open,handleClose}) {
 
     };
 
-    let isAdmin = (currentUser) => {
-        if(currentUser) {
-            let a = currentUser.roleEntities;
-            for(let i = 0; i < currentUser.roleEntities.length; i ++){
-                if(a[i].name === 'ROLE_ADMIN')
-                    return true;
-            }
-        }
-        return false;
-    };
 
     let isProvider = (currentUser) => {
         if(currentUser) {

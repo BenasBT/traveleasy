@@ -14,10 +14,10 @@ import OAuth2RedirectHandler from "./user/oauth2/OAuth2RedirectHandler";
 import MyProfile from "./pages/profile/MyProfile";
 import Profile from "./pages/profile/Profile";
 import AdminPage from './pages/admin';
-import Service from './pages/service/Service';
+import Service from './pages/service/ServiceData';
 import ServicesMy from './pages/services/ServicesMy';
 import AddService from './pages/service/AddService';
-
+import EditService from './pages/service/EditService'
 
 function App() {
 
@@ -41,7 +41,6 @@ function App() {
   return (
 
     <MuiThemeProvider theme={theme}>
-      <Modal/>
       <Router>
         <Header/>
         <Switch>
@@ -54,7 +53,7 @@ function App() {
           <Route path="/services" component={Services} />
 
           <Route path="/service/add" component={AddService} />
-          <Route path="/service/:id" component={Service} />
+          <Route path="/service/edit/:id" component={EditService} />
 
           <Route path="/" component={Home} />
         </Switch>

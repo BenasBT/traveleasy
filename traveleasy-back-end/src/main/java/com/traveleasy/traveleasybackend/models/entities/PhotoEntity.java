@@ -1,11 +1,12 @@
 package com.traveleasy.traveleasybackend.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -18,4 +19,8 @@ public class PhotoEntity extends AbstractEntity {
 
     @Column(name = "dir")
     private String dir;
+
+    @ManyToOne
+    @JsonIgnore
+    private ServiceEntity service;
 }

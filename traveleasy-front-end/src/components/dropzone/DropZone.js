@@ -72,7 +72,7 @@ export default function DropZone({files,setFiles}) {
         isDragActive,
         isDragAccept,
         isDragReject} = useDropzone({
-        accept: 'image/*',
+        accept: 'image/jpeg, image/png',
         onDrop: acceptedFiles => {
 
             if(files.length !== 0)

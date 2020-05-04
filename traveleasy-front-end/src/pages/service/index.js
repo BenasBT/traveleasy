@@ -1,2 +1,2 @@
 export {AddService} from './AddService'
-export {Service} from './Service'
+export {Service} from './ServiceData'

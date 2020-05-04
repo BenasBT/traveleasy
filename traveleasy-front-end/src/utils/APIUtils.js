@@ -73,6 +73,22 @@ export const addService = async (addRequest) =>{
 
 };
 
+export const editService = async (editRequest) =>{
+    try {
+        const headers = {
+            'Authorization':localStorage.getItem(ACCESS_TOKEN)
+        };
+        const res = await apiClient.patch("/service/edit",editRequest,{headers});
+        let responce = res;
+        console.log(responce);
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error adding service");
+    }
+
+};
+
 export const addServiceFiles = async (addRequestFiles) =>{
     try {
         console.log(addRequestFiles);
@@ -82,11 +98,78 @@ export const addServiceFiles = async (addRequestFiles) =>{
         };
         const res = await apiClient.post("/service/add",addRequestFiles,{headers});
         let responce = res;
-        console.log(responce);
 
     }catch (e) {
         console.log(e);
         console.log("Error adding service");
     }
+
+};
+
+
+export const getMyServices = async () =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("/service/my",{headers});
+        return res.data;
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
+
+export const getServices = async () =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("/service/",{headers});
+        return res.data;
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
+
+export const getService = async (id) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("/service/"+id,{headers});
+        return res.data;
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
+
+export const getPhoto = async (id) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        // const res =await apiClient.get("/photo/" + id,{headers});
+        const res =await apiClient.get("/photo/" + id,{headers});
+        return res.data;
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
+
+export const deletePhoto = async (id) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        // const res =await apiClient.get("/photo/" + id,{headers});
+        const res =await apiClient.delete("/photo/" + id,{headers});
+        return res.data;
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
 
 };

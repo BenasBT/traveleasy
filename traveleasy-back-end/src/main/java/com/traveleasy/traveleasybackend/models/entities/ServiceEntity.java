@@ -1,5 +1,6 @@
 package com.traveleasy.traveleasybackend.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,9 +35,11 @@ public class ServiceEntity extends AbstractEntity {
     @Column(name = "end_time", columnDefinition="TIME")
     private Time end_time;
 
+    @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "start_date", columnDefinition="DATE")
     private Date start_date;
 
+    @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "end_date", columnDefinition="DATE")
     private Date end_date;
 
@@ -52,10 +55,8 @@ public class ServiceEntity extends AbstractEntity {
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<CategoryEntity> service_category = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade=CascadeType.ALL)
-    @JoinTable(name = "service_photo",
-            joinColumns = @JoinColumn(name = "service_id"),
-            inverseJoinColumns = @JoinColumn(name = "photo_id"))
+    @OneToMany(cascade=CascadeType.ALL)
+    @JoinColumn(name="service_id")
     private Set<PhotoEntity> service_photo = new HashSet<>();
 
 }

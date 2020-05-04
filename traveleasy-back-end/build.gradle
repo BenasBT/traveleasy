@@ -30,6 +30,8 @@ dependencies {
 	compile "org.flywaydb:flyway-core"
 	compile 'org.springframework.boot:spring-boot-starter-jdbc'
 	compile group: 'org.json', name: 'json', version: '20190722'
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '2.2.6.RELEASE'
+	testCompile group: 'org.springframework', name: 'spring-test', version: '5.2.6.RELEASE'
 
 	compile "io.jsonwebtoken:jjwt:0.9.0"
 	compile group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: '5.2.0.RELEASE'
