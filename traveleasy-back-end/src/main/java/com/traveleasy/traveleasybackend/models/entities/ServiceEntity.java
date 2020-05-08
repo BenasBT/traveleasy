@@ -1,6 +1,7 @@
 package com.traveleasy.traveleasybackend.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.traveleasy.traveleasybackend.models.StatusName;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +18,7 @@ import java.util.Set;
 @Table(name = "service")
 public class ServiceEntity extends AbstractEntity {
 
-    @OneToOne(targetEntity=UserEntity.class,cascade=CascadeType.ALL)
+    @OneToOne(targetEntity=UserEntity.class,cascade=CascadeType.REFRESH)
     private UserEntity user;
 
     @Column(name = "name", unique = true, nullable = false)
@@ -29,9 +30,11 @@ public class ServiceEntity extends AbstractEntity {
     @Column(name = "price")
     private double price;
 
+    @JsonFormat(pattern="HH:mm")
     @Column(name = "start_time", columnDefinition="TIME")
     private Time start_time;
 
+    @JsonFormat(pattern="HH:mm")
     @Column(name = "end_time", columnDefinition="TIME")
     private Time end_time;
 
@@ -49,7 +52,11 @@ public class ServiceEntity extends AbstractEntity {
     @Column(name = "max_people_count")
     private int max_people_count;
 
-    @ManyToMany(fetch = FetchType.LAZY,cascade=CascadeType.ALL)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private StatusName status;
+
+    @ManyToMany(fetch = FetchType.LAZY,cascade=CascadeType.REFRESH)
     @JoinTable(name = "service_category",
             joinColumns = @JoinColumn(name = "service_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))

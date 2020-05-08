@@ -37,12 +37,12 @@ const useStyles = makeStyles(theme => ({
 export default function ServiceData({open,
                                     handleClose,
                                     service,
-
                                     onAddClick,
-                                    checkUser,
+                                    checkCurrentUser,
                                     onEditClick,
                                     onDeleteClick,
-                                    onCheckProviderClick}) {
+                                    onCheckProviderClick,
+                                    CheckUserClicked}) {
     //Picture if exist else some defoult picture
     //Display data
 
@@ -72,7 +72,9 @@ export default function ServiceData({open,
     let ServicesMedia = (photo) =>{
 
         return  (
-            <CardMedia className={classes.image}
+            <CardMedia
+                       key={photo.id}
+                       className={classes.image}
                        component="img"
                        alt={photo.name}
                        image={"http://localhost:3001/api/photo/" + photo.id}
@@ -97,7 +99,6 @@ export default function ServiceData({open,
             ))
         )
     };
-
 
     return(
             <MyModal modalHeader={service.name} open={open} handleClose={handleClose}>
@@ -136,7 +137,7 @@ export default function ServiceData({open,
                             </Typography>
 
                             <Typography variant="body2" gutterBottom>
-                                People :from {service.min_people_count} to {service.max_people_count}
+                                People: from {service.min_people_count} to {service.max_people_count}
                             </Typography>
                             <Typography variant="body2" gutterBottom>
                                 {provider.email ? <Typography variant="body2" gutterBottom>
@@ -157,17 +158,17 @@ export default function ServiceData({open,
                                 Add
                             </Button>
 
-                            {checkUser() || isAdmin(currentUser) ?
+                            {checkCurrentUser() || isAdmin(currentUser) ?
                                 <Button size="small" color="primary" onClick={event => onEditClick(event)}>
                                     Edit
                                 </Button>: null}
 
-                            {checkUser() || isAdmin(currentUser) ?
+                            {checkCurrentUser() || isAdmin(currentUser) ?
                                 <Button  color="primary" onClick={event => onDeleteClick(event)}>
                                     Delete
                                 </Button>: null}
 
-                            {!checkUser() ?
+                            {CheckUserClicked ||!checkCurrentUser()  ?
                                 <Button size="small" color="primary" onClick={event => onCheckProviderClick(event)}>
                                     Check Provider
                                 </Button> : null}

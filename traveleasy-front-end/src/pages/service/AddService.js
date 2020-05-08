@@ -101,6 +101,7 @@ export default function AddService() {
             formData.append('file', files[i]);
         }
 
+        console.log(addRequest);
         formData.set('data',JSON.stringify(addRequest));
 
         addServiceFiles(formData).then();

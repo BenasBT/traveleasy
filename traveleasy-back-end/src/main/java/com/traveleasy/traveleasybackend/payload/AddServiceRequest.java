@@ -22,13 +22,13 @@ public class AddServiceRequest {
     private boolean newCategoryChecked;
     private String newCategory;
 
-    private Time start_time;
+    private String start_time;
 
-    private Time end_time;
+    private String end_time;
 
-    private Date start_date;
+    private String start_date;
 
-    private Date end_date;
+    private String end_date;
 
     private int min_people_count;
 

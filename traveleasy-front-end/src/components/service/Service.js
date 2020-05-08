@@ -5,9 +5,12 @@ import {isAdmin} from  '../../utils/Utils'
 
 import {makeStyles,useTheme} from "@material-ui/core/styles";
 import {useSelector} from "react-redux";
-import {useHistory} from "react-router-dom";
+import {useHistory, useLocation} from "react-router-dom";
 import ServiceData from "../../pages/service/ServiceData";
-
+import {deleteService} from '../../utils/APIUtils';
+import MyModal from "../modal/MyModal";
+import FormGroup from "@material-ui/core/FormGroup";
+import AddService from "../../common/addform";
 
 const useStyles = makeStyles({
     root: {
@@ -16,17 +19,23 @@ const useStyles = makeStyles({
 
     },
     image:{
-        width: "50%",
         margin: "auto",
-        align:"center"
+        align:"center",
+        "max-height": "180px",
+        "max-width": "300px",
+        // height: 180,
+        // width: 300,
+
     }
 });
 
-export default function Service({service}) {
+export default function Service({service,servicesState,ps,fs,CheckUserClicked}) {
 
     const [photos, setPhotos] = useState([]);
     const [thumb, setThumb] = useState(0);
     const [openService, setOpenService] = useState(false);
+    const [addService, setAddService] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
 
 
     const currentUser = useSelector(state => state.currentUserReducer);
@@ -42,16 +51,29 @@ export default function Service({service}) {
 
     };
 
-    let checkUser = () =>{
+
+
+    let checkCurrentUser = () =>{
+        console.log(currentUser);
+        if (currentUser )
         if(currentUser.id === service.user.id){
             return true;
         }
         return false;
     };
 
+    let checkUserClicked = () =>{
+
+        if(typeof CheckUserClicked !== 'undefined'){
+            return true;
+        }
+        return false;
+    };
 
     const classes = useStyles();
     const theme = useTheme();
+
+
 
     let ServicesMedia = (photo) =>{
 
@@ -68,17 +90,15 @@ export default function Service({service}) {
 
     let onEditClick = (event) =>{
         event.preventDefault();
-        console.log("onEditClick");
         history.push("service/edit/" + service.id);
     };
+    let location= useLocation();
 
-    let onDeleteClick = (event) =>{
-        event.preventDefault();
-        console.log("onDeleteClick")
-    };
+
+
     let onCheckProviderClick = (event) =>{
         event.preventDefault();
-        console.log("onCheckProviderClick")
+        history.push("profile/"+ service.user.id);
     };
     let onOpenClick = (event) =>{
         event.preventDefault();
@@ -86,6 +106,12 @@ export default function Service({service}) {
     };
 
     let onAddClick = (event) =>{
+        event.preventDefault();
+        setAddService(true);
+    };
+
+
+    let onMarkClick = (event) =>{
         event.preventDefault();
         setOpenService(true);
     };
@@ -98,6 +124,73 @@ export default function Service({service}) {
     useEffect(() => {
         setPhotos(service.service_photo)
     }, []);
+
+
+    let onDeleteService = (event) =>{
+        event.preventDefault();
+        deleteService(service.id).then(r => console.log(r));
+        setOpenDelete(false);
+        console.log(servicesState);
+
+        let index = -1;
+        servicesState.forEach((stateService,i) => {
+            if(stateService.id === service.id){
+                index=i;
+            }
+        });
+
+        console.log(index);
+        if (index > -1) {
+            servicesState.splice(index, 1);
+        }
+        console.log(servicesState);
+        fs(!ps);
+
+    };
+
+    let onDeleteClick = (event) => {
+        event.preventDefault();
+        setOpenDelete(true);
+    };
+
+    let handleClose = (event) => {
+        event.preventDefault();
+        setOpenDelete(false);
+    };
+
+    let closeAddService = (event) => {
+        event.preventDefault();
+        setAddService(false);
+    };
+
+    let ConfirmDelete = () =>{
+        return(
+            <MyModal modalHeader={"Are you sure ?"} open={openDelete} handleClose={handleClose}>
+                <Card>
+
+                    <Typography variant="body2" gutterBottom>
+                        Are you sure you want to remove this service ?
+                    </Typography>
+                    <Typography variant="body2" gutterBottom>
+                        {service.name}
+                    </Typography>
+
+                    <CardActions>
+                        <Button
+                            variant="contained"
+                            onClick={handleClose}
+                        >Cancel</Button>
+
+                        <Button color="primary"
+                                variant="contained"
+                                onClick={event => onDeleteService(event)}
+
+                        >Delete</Button>
+                    </CardActions>
+                </Card>
+            </MyModal>
+        );
+    };
 
     return(
         <div>
@@ -117,12 +210,14 @@ export default function Service({service}) {
             </CardActionArea>
             <CardActions>
 
-                {checkUser() || isAdmin(currentUser) ?
+                <FormGroup aria-label="position" row>
+
+                {checkCurrentUser() || isAdmin(currentUser) ?
                     <Button size="small" color="primary" onClick={event => onEditClick(event)}>
                         Edit
                     </Button>: null}
 
-                {checkUser() || isAdmin(currentUser) ?
+                {checkCurrentUser() || isAdmin(currentUser) ?
                     <Button size="small" color="primary" onClick={event => onDeleteClick(event)}>
                     Delete
                     </Button>: null}
@@ -131,7 +226,7 @@ export default function Service({service}) {
                     Open
                 </Button>
 
-                {!checkUser() ?
+                {!checkUserClicked() && !checkCurrentUser() ?
                 <Button size="small" color="primary" onClick={event => onCheckProviderClick(event)}>
                     Check Provider
                 </Button> : null}
@@ -140,21 +235,30 @@ export default function Service({service}) {
                     Add
                 </Button>
 
+                <Button size="small" color="primary" onClick={event => onMarkClick(event)}>
+                    Mark
+                </Button>
+                </FormGroup>
 
             </CardActions>
         </Card>
         <ServiceData  open={openService}
                       handleClose={onCloseService}
                       service={service}
-
-                      checkUser={checkUser}
+                      checkCurrentUser={checkCurrentUser}
                       onAddClick={onAddClick}
                       onDeleteClick={onDeleteClick}
                       onEditClick={onEditClick}
                       onCheckProviderClick={onCheckProviderClick}
+                      CheckUserClicked={CheckUserClicked}
         />
 
+            {ConfirmDelete()}
+            <AddService handleClose={closeAddService} open={addService} service={service}/>
+
         </div>
+
+
 
     );
 

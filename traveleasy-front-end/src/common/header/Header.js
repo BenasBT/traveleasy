@@ -16,6 +16,11 @@ import {ACCESS_TOKEN} from '../../constants';
 import CartDrawer from "../drawers/cart/CartDrawer";
 import UserDrawer from "../drawers/user/UserDrawer";
 import {useDispatch, useSelector} from "react-redux";
+import EventIcon from '@material-ui/icons/Event';
+import CalendarViewDayIcon from '@material-ui/icons/CalendarViewDay';
+import {getScheduler, SendEditEvent} from "../../utils/APIUtils";
+import Filter from "../../pages/services/Filter";
+import SearchIcon from '@material-ui/icons/Search';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -35,8 +40,12 @@ export default function Header(){
     const [showCategories, setShowCategories] = useState(false);
     const [openCart, setOpenCart] = useState(false);
     const [openUser, setOpenUser] = useState(false);
+
+    const [openSearch, setOpenSearch] = useState(false);
     const history = useHistory();
     const [openLogin, setOpenLogin] = useState(false);
+
+    const [events, setEvents] = useState(false);
 
     const currentUser = useSelector(state => state.currentUserReducer);
 
@@ -54,6 +63,12 @@ export default function Header(){
 
     };
 
+    let onShedulerClick = (event) =>{
+        event.preventDefault();
+        history.push("/scheduler");
+
+    };
+
     let onHomeClick = (event) =>{
         event.preventDefault();
         history.push("/");
@@ -63,12 +78,70 @@ export default function Header(){
         setOpenUser(!openUser);
     };
 
+    let onSearchClick = () =>{
+        setOpenSearch(!openSearch);
+    };
+
 
     let onCartClick = (event) =>{
         event.preventDefault();
-        console.log("onCartClick");
+        getScheduler().then((events) => setEvents(events));
         setOpenCart(!openCart);
     };
+    let deleteEvent = (e,id) =>{
+        e.preventDefault();
+        console.log(id);
+    };
+
+    let SubmitEditEvent = (e,event,fixedDate,sDate,sTime,eDate,eTime,pplCnt) =>{
+        e.preventDefault();
+        console.log("SubmitEditEvent");
+        const editRequest = {
+
+            id:event.id,
+            service:event.service,
+
+            fixed_date:fixedDate,
+            start_date: sDate,
+            start_time:sTime,
+
+            end_date:eDate,
+            end_time:eTime,
+
+            people_count: pplCnt
+        };
+
+
+        if(pplCnt === ''){
+            editRequest.people_count =0;
+        }
+        if(sTime === null){
+            editRequest.start_date = "";
+        }
+        if(sDate === null){
+            editRequest.start_date = "";
+        }
+        if(eDate === null){
+            editRequest.end_date = "";
+        }
+        if(eTime === null){
+            editRequest.end_time = "";
+        }
+        if(fixedDate){
+            console.log("fixedDate");
+            editRequest.end_date = "";
+            editRequest.end_time = "";
+        }
+
+        console.log(editRequest);
+        SendEditEvent(editRequest).then(() =>{
+            getScheduler().then((events) => setEvents(events));
+
+        });
+    };
+
+
+
 
     let onCartClose = (event) =>{
         event.preventDefault();
@@ -100,6 +173,12 @@ export default function Header(){
                         <Home />  {/*TODO: change icon*/}
                     </IconButton>
 
+                    <IconButton edge="start" className={classes.homeButton}
+                                color="inherit" aria-label="menu"
+                                onClick={onSearchClick}>
+                        <SearchIcon />  {/*TODO: change icon*/}
+                    </IconButton>
+
                     <Typography align="center" variant="h6" className={classes.title}
                                 onClick={onActivityClick}
                                 onMouseEnter={onMouseEnter}>
@@ -109,8 +188,13 @@ export default function Header(){
                         <div>
                             <IconButton edge="start" className={classes.homeButton}
                                         color="inherit" aria-label="menu"
+                                        onClick={(event =>{ onShedulerClick(event)}) }>
+                                <EventIcon />
+                            </IconButton>
+                            <IconButton edge="start" className={classes.homeButton}
+                                        color="inherit" aria-label="menu"
                                         onClick={(event =>{ onCartClick(event)}) }>
-                                <ShoppingCartIcon />
+                                <CalendarViewDayIcon />
                             </IconButton>
                             <IconButton edge="start" className={classes.homeButton}
                                         color="inherit" aria-label="menu"
@@ -126,10 +210,15 @@ export default function Header(){
 
                 </Toolbar>
             </AppBar>
-            <Categories show={showCategories} />
+
+            <Filter open={openSearch} handleClose={onSearchClick}/>
+
             <LoginPage  open={openLogin} handleClose={onCloseLogin}/>
 
-            <CartDrawer open={openCart} handleClose={onCartClick}/>
+            <CartDrawer open={openCart} handleClose={onCartClick}
+                        events={events}
+                        deleteEvent={deleteEvent} editEvent={SubmitEditEvent}/>
+
             <UserDrawer open={openUser} handleClose={onProfileClick}/>
         </div>
     );

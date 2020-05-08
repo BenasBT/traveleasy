@@ -30,7 +30,19 @@ export const getCurrentUser = async (dispatch) =>{
     return null;
 
 };
+export const getUser = async (id) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("/user/"+ id,{headers});
+        const user = res.data;
+        return user;
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
 
+};
 
 export const register = async ({name,email,password}) =>{
     try {
@@ -57,12 +69,12 @@ export const getAllCategories = async () =>{
 
 };
 
-export const addService = async (addRequest) =>{
+export const addServiceToEvents = async (addRequest) =>{
     try {
         const headers = {
             'Authorization':localStorage.getItem(ACCESS_TOKEN)
         };
-        const res = await apiClient.post("/service/add",addRequest,{headers});
+        const res = await apiClient.post("/scheduler/add",addRequest,{headers});
         let responce = res;
         console.log(responce);
 
@@ -107,10 +119,10 @@ export const addServiceFiles = async (addRequestFiles) =>{
 };
 
 
-export const getMyServices = async () =>{
+export const getUserServices = async (id) =>{
     try {
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
-        const res =await apiClient.get("/service/my",{headers});
+        const res =await apiClient.get("/service/user/"+ id,{headers});
         return res.data;
     }catch (e) {
         console.log(e);
@@ -173,3 +185,78 @@ export const deletePhoto = async (id) =>{
     return null;
 
 };
+
+
+export const deleteService = async (id) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.delete("/service/"+id,{headers});
+        return res.data;
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
+
+export const getScheduler = async () =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("/scheduler/",{headers});
+        console.log(res);
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
+
+
+export const deleteEvent = async (id) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.delete("/scheduler/delete/" + id,{headers});
+        console.log(res);
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
+
+export const SendEditEvent = async (editRequest) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.patch("/scheduler/edit",editRequest,{headers});
+        console.log(res);
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
+
+export const getEvent = async (id) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.patch("/scheduler/"+ id,{headers});
+        console.log(res);
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+}

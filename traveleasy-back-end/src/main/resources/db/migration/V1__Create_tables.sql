@@ -50,6 +50,7 @@ CREATE TABLE service (
   end_date date,
   min_people_count integer,
   max_people_count integer,
+  status varchar(255) NOT NULL,
   PRIMARY KEY (id)
 );
 
@@ -59,11 +60,25 @@ CREATE TABLE service_category (
   PRIMARY KEY (service_id,category_id)
 );
 
-# CREATE TABLE service_photo (
-#   service_id  BIGINT NOT NULL REFERENCES service(id),
-#   photo_id  BIGINT NOT NULL REFERENCES photos(id),
-#   PRIMARY KEY (service_id,photo_id)
-# );
+CREATE TABLE event (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    service_id BIGINT NOT NULL REFERENCES service(id),
+    user_id BIGINT NOT NULL REFERENCES category(id),
+    fixed_date bool,
+    start_time time,
+    end_time time,
+
+    start_date date,
+    end_date date,
+    people_count integer,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE marked (
+    user_id BIGINT NOT NULL REFERENCES users(id),
+    service_id BIGINT NOT NULL REFERENCES service(id),
+    PRIMARY KEY (user_id,service_id)
+);
 
 
 insert into role (id,name) value (0,'ROLE_ADMIN');

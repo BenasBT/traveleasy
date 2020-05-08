@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -6,8 +6,11 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Divider from "@material-ui/core/Divider";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import {red} from "@material-ui/core/colors";
-
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import EditEvent from "../../../components/event/EditEvent";
+import {getScheduler, SendEditEvent} from "../../../utils/APIUtils";
 
 
 const useStyles = makeStyles(theme => ({
@@ -18,19 +21,30 @@ const useStyles = makeStyles(theme => ({
 }));
 
 // TODO: Pakeisti i kortas
-export default function CartDrawer ({open,handleClose}) {
-    const classes = useStyles();
+export default function CartDrawer ({open,handleClose,events,deleteEvent,editEvent}) {
 
+    const [selectedEvent, setSelectedEvent] = useState({});
+    const [openEditEvent, setOpenEditEvent] = useState(false);
+
+    const classes = useStyles();
     const sideList =
         <div
             className={classes.list}
         >
-            <List>
-                {['Activity 1', 'Activity 2', 'Activity 3', 'Activity 4'].map((text, index) => (
+            {events  ?(
+                <List>
+                {events.map((event, index) => (
                     <div>
-                        <ListItem button key={text}>
+                        <ListItem  key={index}>
 
-                            <ListItemText primary={text} />
+                            <ListItemText primary={event.service.name} />
+                            <IconButton aria-label="delete" color="primary" onClick={e => openEdit(e,event)}>
+                                <EditIcon />
+                            </IconButton>
+                            <IconButton aria-label="delete" color="primary" >
+                                <DeleteIcon />
+                            </IconButton>
+
                         </ListItem>
                         <Divider/>
                     </div>
@@ -38,14 +52,38 @@ export default function CartDrawer ({open,handleClose}) {
 
                 ))}
 
-            </List>
+            </List>): null }
+
 
         </div>
     ;
 
+    let closeEventEdit = (event) =>{
+        event.preventDefault();
+        setOpenEditEvent(false);
+
+    };
+
+    let openEdit = (e,event) =>{
+        e.preventDefault();
+        setSelectedEvent(event);
+        setOpenEditEvent(true);
+
+    };
+
+
     return(
-        <Drawer anchor='right' open={open} onClose={handleClose}>
-            {sideList}
-        </Drawer>
+        <div>
+
+            <Drawer anchor='right' open={open} onClose={handleClose}>
+                {sideList}
+            </Drawer>
+
+            <EditEvent event={selectedEvent} open={openEditEvent}
+                       handleClose={event => closeEventEdit(event)}
+                       deleteEvent={deleteEvent} editEvent={editEvent} />
+
+        </div>
+
     )
 }

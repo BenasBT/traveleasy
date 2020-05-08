@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './App.css';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import Header from './common/header';
@@ -15,10 +15,10 @@ import MyProfile from "./pages/profile/MyProfile";
 import Profile from "./pages/profile/Profile";
 import AdminPage from './pages/admin';
 import Service from './pages/service/ServiceData';
-import ServicesMy from './pages/services/ServicesMy';
+import UserServices from './pages/services/UserServices';
 import AddService from './pages/service/AddService';
 import EditService from './pages/service/EditService'
-
+import Scheduler from './pages/scheduler/Scheduler'
 function App() {
 
   const theme = createMuiTheme({
@@ -38,6 +38,8 @@ function App() {
   const dispatch = useDispatch();
 
   getCurrentUser(dispatch).then();
+
+
   return (
 
     <MuiThemeProvider theme={theme}>
@@ -46,11 +48,12 @@ function App() {
         <Switch>
           <Route path="/oauth2/redirect" component={OAuth2RedirectHandler}/>
           <Route path="/admin" component={AdminPage}/>
-          <Route path="/profile/me" component={MyProfile}/>
           <Route path="/profile/:id" component={Profile} />
 
-          <Route path="/services/my" component={ServicesMy} />
+          <Route path="/services/:id" component={UserServices} />
           <Route path="/services" component={Services} />
+          <Route path="/scheduler" component={Scheduler} />
+
 
           <Route path="/service/add" component={AddService} />
           <Route path="/service/edit/:id" component={EditService} />

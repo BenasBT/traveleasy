@@ -30,9 +30,10 @@ export default function UserDrawer ({open,handleClose}) {
     let onLogout = (event) => {
         event.preventDefault();
         localStorage.removeItem(ACCESS_TOKEN);
-        dispatch(clearUser())
+        dispatch(clearUser());
         console.log("Logout");
         handleClose();
+        history.push("/")
     };
 
     let onAdmin = (event) => {
@@ -46,14 +47,14 @@ export default function UserDrawer ({open,handleClose}) {
     let onMyServices = (event) => {
         event.preventDefault();
 
-        history.push("/services/my");
+        history.push("/services/" + currentUser.id);
 
     };
 
     let onMyProfile = (event) => {
         event.preventDefault();
         console.log("onMyProfile");
-        history.push("/profile/me");
+        history.push("/profile/" + currentUser.id);
 
     };
 

@@ -11,10 +11,10 @@ export const clearUser = () =>{
     }
 };
 
-export const setCategories = (categories) =>{
+export const setCalendar = (calendar) =>{
     return{
         type:'CATEGORIES',
-        categories: categories
+        categories: calendar
     }
 };
 

@@ -23,7 +23,7 @@ import {CardActions, Card, Typography} from "@material-ui/core";
 import MyModal from "../../components/modal/MyModal";
 
 
-export default function AddService() {
+export default function EditService() {
 
     const currentUser = useSelector(state => state.currentUserReducer);
 

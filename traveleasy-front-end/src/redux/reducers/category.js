@@ -1,8 +1,8 @@
 const categoryReducer = (state = [], action) =>{
 
     switch(action.type){
-        case 'CATEGORIES':
-            return action.categories;
+        case 'CALENDAR':
+            return action.calendar;
         default:
             return state
     }

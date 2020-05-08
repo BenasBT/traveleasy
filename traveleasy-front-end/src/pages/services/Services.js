@@ -1,24 +1,65 @@
 import React, {useEffect, useState} from "react";
 import {getServices} from '../../utils/APIUtils';
 import Service from "../../components/service";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import Filter from "./Filter";
+
+const useStyles = makeStyles((theme) => ({
+
+    root:{
+        width: '100%',
+        backgroundColor: theme.palette.background.paper,
+        position: 'relative',
+        overflow: 'auto',
+
+
+    },
+    listSection: {
+        backgroundColor: 'inherit',
+    },
+    ul: {
+
+        backgroundColor: 'inherit',
+        padding: 0,
+        align:"center"
+    },
+    center:{
+        margin: "auto",
+        width: "60%",
+
+    }
+}));
 
 export default function Services() {
 
-    const [services, setServices] = useState([]);
 
+    const [services, setServices] = useState([]);
+    const [state, forceState] = useState([]);
+    const classes = useStyles();
 
     let mapServices = () =>{
-        console.log(services);
         if(services){
             return services.map(
                 (ser) => (
-                    <Service service={ser}/>
+
+                    <li key={`section-${ser.id}`} className={classes.listSection}>
+                        <ul className={classes.ul}>
+                                <Service service={ser}
+                                         servicesState={services}
+                                         ps={state} fs={forceState}/>
+                        </ul>
+                    </li>
+
                 )
             )
         }
         else return null;
-
     };
+
     let mappedServices;
     useEffect(() => {
         getServices().then(r => {
@@ -30,10 +71,18 @@ export default function Services() {
     if(typeof services !== 'undefined'){
         mappedServices = mapServices();
     }
+    console.log("Services");
+
     return(
-        <div>
-            <p>My Services Page</p>
-            {services ? mappedServices : null}
+        <div className={classes.center}>
+            <p>Services:</p>
+
+            <List className={classes.root} subheader={<li />}>
+                {services ? mappedServices : null}
+            </List>
+
+
+
         </div>
 
     );

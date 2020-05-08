@@ -1,23 +1,19 @@
 package com.traveleasy.traveleasybackend.controllers;
 
 import com.traveleasy.traveleasybackend.models.RoleName;
+import com.traveleasy.traveleasybackend.models.StatusName;
 import com.traveleasy.traveleasybackend.models.entities.CategoryEntity;
 import com.traveleasy.traveleasybackend.models.entities.PhotoEntity;
 import com.traveleasy.traveleasybackend.models.entities.ServiceEntity;
 import com.traveleasy.traveleasybackend.models.entities.UserEntity;
 import com.traveleasy.traveleasybackend.payload.AddServiceRequest;
-import com.traveleasy.traveleasybackend.payload.AuthResponse;
-import com.traveleasy.traveleasybackend.repositories.CategoryRepository;
-import com.traveleasy.traveleasybackend.repositories.RoleRepository;
-import com.traveleasy.traveleasybackend.repositories.ServiceRepository;
-import com.traveleasy.traveleasybackend.repositories.UserRepository;
+import com.traveleasy.traveleasybackend.repositories.*;
 import com.traveleasy.traveleasybackend.security.CurrentUser;
 import com.traveleasy.traveleasybackend.security.UserPrincipal;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +24,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
@@ -51,18 +51,25 @@ public class ServiceController {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private PhotoRepository photoRepository;
+
+    DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    LocalDateTime localDateTime = LocalDateTime.now();
+
     @GetMapping
     @PreAuthorize("hasRole('ROLE_USER')")
     public List<ServiceEntity> getServices() {
         return serviceRepository.findAll();
     }
 
-    @GetMapping("/my")
+    @GetMapping("/user/{id}")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public List<ServiceEntity> getMyServices(@CurrentUser UserPrincipal userPrincipal) {
+    public List<ServiceEntity> getUserServices(@PathVariable("id") long id) {
 
         return serviceRepository.findAllByUser(
-                userRepository.findById(userPrincipal.getId()).orElseThrow(
+                userRepository.findById(id).orElseThrow(
                         () -> new RuntimeException("Cant find current user")
                 )
         );
@@ -76,17 +83,7 @@ public class ServiceController {
 
     }
 
-
-    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<?> addService(@CurrentUser UserPrincipal userPrincipal,
-                                      @RequestParam("file") MultipartFile[] files,
-                                      @RequestParam("data") String addServiceRequestRaw){
-
-        DateFormat formatter = new SimpleDateFormat("HH:mm");
-
-        JSONObject jsonObject = new JSONObject(addServiceRequestRaw);
-
+    private AddServiceRequest formatServiceRequest(JSONObject jsonObject){
         AddServiceRequest addServiceRequest = new AddServiceRequest();
 
         addServiceRequest.setName(jsonObject.getString("name"));
@@ -121,54 +118,76 @@ public class ServiceController {
 
         addServiceRequest.setPrice(jsonObject.getDouble("price"));
 
-        try {
-            String date = jsonObject.getString("start_date");
-            if(!date.equals("")) {
-                addServiceRequest.setStart_date(new SimpleDateFormat("yyyy-MM-dd").parse(
-                        date
-                ));
-            }
-
-            date = jsonObject.getString("end_date");
-            if(!date.equals("")) {
-                addServiceRequest.setEnd_date(new SimpleDateFormat("yyyy-MM-dd").parse(
-                        date
-                ));
-            }
-
-            addServiceRequest.setStart_time(
-                    new java.sql.Time(formatter.parse(
-                            jsonObject.getString("start_time")
-                    ).getTime())
-            );
-
-            addServiceRequest.setEnd_time(
-                    new java.sql.Time(formatter.parse(
-                            jsonObject.getString("end_time")
-                    ).getTime())
-            );
-
-        } catch (ParseException e) {
-            e.printStackTrace();
+        String date = jsonObject.getString("start_date");
+        if(!date.equals("")) {
+            addServiceRequest.setStart_date(date);
+            log.error("addServiceRequest getStart_date {}",addServiceRequest.getStart_date());
         }
 
+        date = jsonObject.getString("end_date");
+        if(!date.equals("")) {
+            addServiceRequest.setEnd_date(date);
+            log.error("addServiceRequest getEnd_date {}",addServiceRequest.getEnd_date());
+
+        }
+
+        addServiceRequest.setStart_time(
+//                    new java.sql.Time(formatter.parse(
+                jsonObject.getString("start_time")
+//                    ).getTime())
+        );
+
+        addServiceRequest.setEnd_time(
+//                    new java.sql.Time(formatter.parse(
+                jsonObject.getString("end_time")
+//                    ).getTime())
+        );
 
         addServiceRequest.setMin_people_count(jsonObject.getInt("min_people_count"));
 
-
         addServiceRequest.setMax_people_count(jsonObject.getInt("max_people_count"));
 
+        return addServiceRequest;
+    }
 
-        ServiceEntity serviceEntity = new ServiceEntity();
+    private Date fixDate(Date dt){
+        Calendar c = Calendar.getInstance();
+        c.setTime(dt);
+        c.add(Calendar.DATE, 1);
+        dt = c.getTime();
+        return dt;
+    }
+
+    private ServiceEntity formatServiceEntity(@CurrentUser UserPrincipal userPrincipal,
+                                              AddServiceRequest addServiceRequest,
+                                              ServiceEntity serviceEntity) {
 
         serviceEntity.setName(addServiceRequest.getName());
         serviceEntity.setDescription(addServiceRequest.getDescription());
 
-        serviceEntity.setStart_date(addServiceRequest.getStart_date());
-        serviceEntity.setStart_time(addServiceRequest.getStart_time());
+        try {
+            serviceEntity.setStart_date(
+                    fixDate(dateFormat.parse(addServiceRequest.getStart_date()))//Timezone bug ?
+            );
 
-        serviceEntity.setEnd_date(addServiceRequest.getEnd_date());
-        serviceEntity.setEnd_time(addServiceRequest.getEnd_time());
+            serviceEntity.setStart_time(
+                    new Time(timeFormat.parse(addServiceRequest.getStart_time()).getTime())
+            );
+
+
+            serviceEntity.setEnd_date(
+
+                    fixDate(dateFormat.parse(addServiceRequest.getEnd_date())) //Timezone bug ?
+            );
+
+
+            serviceEntity.setEnd_time(
+                    new Time( timeFormat.parse(addServiceRequest.getEnd_time()).getTime())
+            );
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
 
         serviceEntity.setPrice(addServiceRequest.getPrice());
 
@@ -186,6 +205,34 @@ public class ServiceController {
 
             serviceEntity.setUser(userEntity.get());
         }
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+
+        LocalDateTime now = LocalDateTime.now();
+
+        log.error("now {} ",dtf.format(now));
+        log.error("start {} ",serviceEntity.getStart_date());
+        log.error("end {} ",serviceEntity.getEnd_date());
+
+        return serviceEntity;
+    }
+
+    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> addService(@CurrentUser UserPrincipal userPrincipal,
+                                      @RequestParam("file") MultipartFile[] files,
+                                      @RequestParam("data") String addServiceRequestRaw){
+
+
+
+        JSONObject jsonObject = new JSONObject(addServiceRequestRaw);
+
+        AddServiceRequest addServiceRequest =formatServiceRequest(jsonObject);
+
+        ServiceEntity serviceEntity = new ServiceEntity();
+        formatServiceEntity(userPrincipal, addServiceRequest,serviceEntity);
+
+        serviceEntity.setStatus(StatusName.PENDING);
 
         serviceRepository.save(serviceEntity);
 
@@ -227,118 +274,28 @@ public class ServiceController {
         return ResponseEntity.ok().build();
     }
 
+
+
     @PatchMapping(value = "/edit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<?> editService(@CurrentUser UserPrincipal userPrincipal,
                                       @RequestParam("file") MultipartFile[] files,
                                       @RequestParam("data") String addServiceRequestRaw){
 
-        DateFormat formatter = new SimpleDateFormat("HH:mm");
+        DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         JSONObject jsonObject = new JSONObject(addServiceRequestRaw);
 
-        AddServiceRequest addServiceRequest = new AddServiceRequest();
 
         ServiceEntity serviceEntity = serviceRepository.findById(jsonObject.getLong("id"))
                 .orElseThrow(()-> new RuntimeException("Service not found"));
 
 
-        addServiceRequest.setName(jsonObject.getString("name"));
-        addServiceRequest.setDescription(jsonObject.getString("description"));
-
-        JSONArray categoriesJson = jsonObject.getJSONArray("categories");
-        List<CategoryEntity> categoryEntities = new ArrayList<>();
-
-        for(int i = 0 ; i < categoriesJson.length(); i++){
-            JSONObject jsonCategory = categoriesJson.getJSONObject(i);
-
-            categoryRepository.findById(jsonCategory.getLong("id"))
-                    .ifPresent(categoryEntities::add);
-
-        }
-        addServiceRequest.setCategoryEntities(categoryEntities);
-
-        addServiceRequest.setNewCategoryChecked(jsonObject.getBoolean("newCategoryChecked"));
-        addServiceRequest.setNewCategory(jsonObject.getString("newCategory"));
-
-        if(addServiceRequest.isNewCategoryChecked()){
-            CategoryEntity categoryEntity = new CategoryEntity();
-            categoryEntity.setName(addServiceRequest.getNewCategory());
-            categoryEntity.setValid(false);
-            categoryRepository.save(categoryEntity);
-
-            categoryRepository.findById(categoryEntity.getId())
-                    .ifPresent(categoryEntities::add);
-
-        }
+        AddServiceRequest addServiceRequest = formatServiceRequest(jsonObject);
 
 
-        addServiceRequest.setPrice(jsonObject.getDouble("price"));
-
-        try {
-            String date = jsonObject.getString("start_date");
-            if(!date.equals("")) {
-                addServiceRequest.setStart_date(new SimpleDateFormat("yyyy-MM-dd").parse(
-                        date
-                ));
-            }
-
-            date = jsonObject.getString("end_date");
-            if(!date.equals("")) {
-                addServiceRequest.setEnd_date(new SimpleDateFormat("yyyy-MM-dd").parse(
-                        date
-                ));
-            }
-
-            addServiceRequest.setStart_time(
-                    new java.sql.Time(formatter.parse(
-                            jsonObject.getString("start_time")
-                    ).getTime())
-            );
-
-            addServiceRequest.setEnd_time(
-                    new java.sql.Time(formatter.parse(
-                            jsonObject.getString("end_time")
-                    ).getTime())
-            );
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-
-        addServiceRequest.setMin_people_count(jsonObject.getInt("min_people_count"));
-
-
-        addServiceRequest.setMax_people_count(jsonObject.getInt("max_people_count"));
-
-
-
-        serviceEntity.setName(addServiceRequest.getName());
-        serviceEntity.setDescription(addServiceRequest.getDescription());
-
-        serviceEntity.setStart_date(addServiceRequest.getStart_date());
-        serviceEntity.setStart_time(addServiceRequest.getStart_time());
-
-        serviceEntity.setEnd_date(addServiceRequest.getEnd_date());
-        serviceEntity.setEnd_time(addServiceRequest.getEnd_time());
-
-        serviceEntity.setPrice(addServiceRequest.getPrice());
-
-        serviceEntity.setMin_people_count(addServiceRequest.getMin_people_count());
-        serviceEntity.setMax_people_count(addServiceRequest.getMax_people_count());
-
-
-        serviceEntity.setService_category(new HashSet<>(addServiceRequest.getCategoryEntities()));
-
-        Optional<UserEntity> userEntity = userRepository.findById(userPrincipal.getId());
-        if(userEntity.isPresent()) {
-            userEntity.get().getRoleEntities().add(
-                    roleRepository.findByName(RoleName.ROLE_PROVIDER)
-                            .orElseThrow(() -> new RuntimeException("User Role not set.")));
-
-            serviceEntity.setUser(userEntity.get());
-        }
+        formatServiceEntity(userPrincipal, addServiceRequest,serviceEntity);
 
         String dir = "/home/anthon/Projects/traveleasy/ftp/" + serviceEntity.getId() + "/";
 
@@ -371,11 +328,24 @@ public class ServiceController {
         }
         photoEntitySet.addAll(serviceEntity.getService_photo());
         serviceEntity.setService_photo(photoEntitySet);
+
         serviceRepository.save(serviceEntity);
 
 
         return ResponseEntity.ok().build();
     }
+
+
+    @DeleteMapping (value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> deleteService(@CurrentUser UserPrincipal userPrincipal,@PathVariable("id") long id){
+        ServiceEntity serviceEntity = serviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Could not find Service"));
+        log.error("{}",serviceEntity.getId());
+        serviceRepository.delete(serviceEntity);
+        return new ResponseEntity<>("Service Deleted",HttpStatus.OK);
+    }
+
+
 
 }
 

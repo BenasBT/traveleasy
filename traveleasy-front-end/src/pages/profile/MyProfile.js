@@ -20,7 +20,7 @@ export default function MyProfile() {
 
         <div>
 
-            <Profile/>
+            <Profile />
 
 
     <p>history</p>
