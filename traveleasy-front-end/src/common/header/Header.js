@@ -18,9 +18,12 @@ import UserDrawer from "../drawers/user/UserDrawer";
 import {useDispatch, useSelector} from "react-redux";
 import EventIcon from '@material-ui/icons/Event';
 import CalendarViewDayIcon from '@material-ui/icons/CalendarViewDay';
-import {getScheduler, SendEditEvent} from "../../utils/APIUtils";
-import Filter from "../../pages/services/Filter";
+import {SenddeleteEvent, getScheduler, SendEditEvent} from "../../utils/APIUtils";
+import Filter from "../drawers/filter/Filter";
 import SearchIcon from '@material-ui/icons/Search';
+import {setCalendarAction} from "../../redux/actions";
+import FullCalendar from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -42,12 +45,15 @@ export default function Header(){
     const [openUser, setOpenUser] = useState(false);
 
     const [openSearch, setOpenSearch] = useState(false);
-    const history = useHistory();
+
     const [openLogin, setOpenLogin] = useState(false);
 
     const [events, setEvents] = useState(false);
 
     const currentUser = useSelector(state => state.currentUserReducer);
+    const dispatch = useDispatch();
+    const history = useHistory();
+    const calendar = useSelector(state => state.calendarReducer);
 
     let onMouseEnter = ()=> {
 
@@ -88,14 +94,74 @@ export default function Header(){
         getScheduler().then((events) => setEvents(events));
         setOpenCart(!openCart);
     };
-    let deleteEvent = (e,id) =>{
+    let deleteEvent = (e,event) =>{
         e.preventDefault();
-        console.log(id);
+        console.log(events);
+        console.log(event);
+
+        let tempEvent  = events.find((e) => e.id === event.id);
+
+        SenddeleteEvent(event.id).then( () =>{
+            let index = events.indexOf(tempEvent);
+            if (index > -1) {
+                events.splice(index, 1);
+            }
+            //REDUX
+            getScheduler().then((events) => {
+                setEvents(events);
+                fullCalendar(parseEvents(events));
+            });
+
+        });
+        // lets api = calendarRef.current.getApi();
+    };
+
+    let parseEvents = (events) =>{
+
+        let mapped_events;
+        if(typeof events[0] !== 'undefined') {
+            if (typeof events[0].service !== 'undefined') {
+                mapped_events = events.map((event) => (
+                    {
+                        title: event.service.name,
+                        start: event.start_date + 'T' + event.start_time,
+                        end: event.end_date + 'T' + event.end_time,
+                        extendedProps: {
+                            department: 'BioChemistry',
+                            event: event
+                        },
+                        description: event.service.description
+                    }))
+            } else {
+                mapped_events = events.map((event) => (
+                    {
+                        title: event.title,
+                        start: event.start,
+                        end: event.end,
+                        extendedProps: {
+                            department: 'BioChemistry',
+                            event: event.extendedProps.event
+                        },
+                        description: event.description
+                    }))
+            }
+        }
+
+        let calendar = {events:mapped_events};
+        return calendar;
+    };
+
+
+    let fullCalendar = (events) => {
+        //REDUX
+        dispatch(setCalendarAction(
+            <FullCalendar defaultView="dayGridMonth" plugins={[ dayGridPlugin ]}
+                          events={events} eventClick={calendar.props.eventClick}
+            />));
     };
 
     let SubmitEditEvent = (e,event,fixedDate,sDate,sTime,eDate,eTime,pplCnt) =>{
         e.preventDefault();
-        console.log("SubmitEditEvent");
         const editRequest = {
 
             id:event.id,
@@ -128,14 +194,16 @@ export default function Header(){
             editRequest.end_time = "";
         }
         if(fixedDate){
-            console.log("fixedDate");
             editRequest.end_date = "";
             editRequest.end_time = "";
         }
 
         console.log(editRequest);
         SendEditEvent(editRequest).then(() =>{
-            getScheduler().then((events) => setEvents(events));
+            getScheduler().then((events) => {
+                setEvents(events);
+                fullCalendar(parseEvents(events));
+            });
 
         });
     };
@@ -145,14 +213,12 @@ export default function Header(){
 
     let onCartClose = (event) =>{
         event.preventDefault();
-        console.log("onCartClick");
         setOpenCart(false);
     };
 
 
     let onLoginClick = (event) =>{
         event.preventDefault();
-        console.log("onLoginClick");
         setOpenLogin(true);
     };
 

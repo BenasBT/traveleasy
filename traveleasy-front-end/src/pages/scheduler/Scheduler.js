@@ -1,14 +1,16 @@
 import React, {useEffect, useState,useRef} from "react";
 import {useParams} from 'react-router-dom'
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {makeStyles} from "@material-ui/core/styles";
 import {Card,CardMedia,CardContent,Typography} from "@material-ui/core";
-import {getScheduler, deleteEvent,SendEditEvent} from '../../utils/APIUtils';
+import {getScheduler, SenddeleteEvent,SendEditEvent} from '../../utils/APIUtils';
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import './main.scss'
 import ViewEvent from "../../components/event/ViewEvent";
-import EditEvent from "../../components/event/EditEvent"; // webpack must be configured to do this
+import EditEvent from "../../components/event/EditEvent";
+import {setUser} from "../../redux/actions"; // webpack must be configured to do this
+import {setCalendarAction} from '../../redux/actions/index';
 
 export default function Scheduler() {
 
@@ -21,9 +23,11 @@ export default function Scheduler() {
     const [editEvent, setEditEvent] = useState(false);
 
     const [state, forceStateUpdate] = useState(false);
-    const [calendar, setCalendar] = useState(null);
 
-    const calendarRef = useRef(null);
+    const dispatch = useDispatch();
+
+    // const [calendar, setCalendar] = useState(null);
+    const calendar = useSelector(state => state.calendarReducer);
 
 
     let parseEvents = (events) =>{
@@ -72,8 +76,7 @@ export default function Scheduler() {
 
     };
 
-    let closeEventEdit = (event) =>{
-        event.preventDefault();
+    let closeEventEdit = () =>{
         setEditEvent(false);
 
     };
@@ -82,7 +85,7 @@ export default function Scheduler() {
         e.preventDefault();
         let tempEvent  = events.events.find((e) => e.extendedProps.event.id === event.id);
 
-        deleteEvent(event.id).then( () =>{
+        SenddeleteEvent(event.id).then( () =>{
             let index = events.events.indexOf(tempEvent);
             if (index > -1) {
                 events.events.splice(index, 1);
@@ -152,7 +155,6 @@ export default function Scheduler() {
     useEffect(() => {
 
         getScheduler().then(events => {
-            //REDUX
             setEvents(parseEvents(events));
             fullCalendar(parseEvents(events));
 
@@ -163,14 +165,15 @@ export default function Scheduler() {
 
     let fullCalendar = (events) => {
         //REDUX
-        setCalendar (
+        dispatch(setCalendarAction(
             <FullCalendar defaultView="dayGridMonth" plugins={[ dayGridPlugin ]}
                           events={events} eventClick={eventClick}
-                          ref={calendarRef}
-        />);
-
+            />));
     };
-    console.log(calendar);
+
+    let Calendar = () =>{
+        return calendar;
+    };
     return(
         <div>
             <p>Scheduler</p>
@@ -182,7 +185,7 @@ export default function Scheduler() {
                        currentUser={currentUser} onDeleteClick={onDeleteClick} onEditClick={onEditClick} />
 
             <EditEvent event={viewedEvent} open={editEvent}
-                       handleClose={event => closeEventEdit(event)} editEvent={SubmitEditEvent} />
+                       handleClose={closeEventEdit} editEvent={SubmitEditEvent} />
 
         </div>
     );

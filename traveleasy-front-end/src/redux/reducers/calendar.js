@@ -1,4 +1,4 @@
-const categoryReducer = (state = [], action) =>{
+const calendarReducer = (state = [], action) =>{
 
     switch(action.type){
         case 'CALENDAR':
@@ -8,4 +8,4 @@ const categoryReducer = (state = [], action) =>{
     }
 };
 
-export default categoryReducer;
+export default calendarReducer;

@@ -41,7 +41,7 @@ export default function CartDrawer ({open,handleClose,events,deleteEvent,editEve
                             <IconButton aria-label="delete" color="primary" onClick={e => openEdit(e,event)}>
                                 <EditIcon />
                             </IconButton>
-                            <IconButton aria-label="delete" color="primary" >
+                            <IconButton aria-label="delete" color="primary" onClick={e=> deleteEvent(e,event)} >
                                 <DeleteIcon />
                             </IconButton>
 
@@ -59,12 +59,12 @@ export default function CartDrawer ({open,handleClose,events,deleteEvent,editEve
     ;
 
     let closeEventEdit = (event) =>{
-        event.preventDefault();
         setOpenEditEvent(false);
 
     };
 
     let openEdit = (e,event) =>{
+        console.log(event);
         e.preventDefault();
         setSelectedEvent(event);
         setOpenEditEvent(true);
@@ -80,7 +80,7 @@ export default function CartDrawer ({open,handleClose,events,deleteEvent,editEve
             </Drawer>
 
             <EditEvent event={selectedEvent} open={openEditEvent}
-                       handleClose={event => closeEventEdit(event)}
+                       handleClose={closeEventEdit}
                        deleteEvent={deleteEvent} editEvent={editEvent} />
 
         </div>

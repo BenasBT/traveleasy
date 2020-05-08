@@ -54,7 +54,6 @@ export default function Service({service,servicesState,ps,fs,CheckUserClicked}) 
 
 
     let checkCurrentUser = () =>{
-        console.log(currentUser);
         if (currentUser )
         if(currentUser.id === service.user.id){
             return true;
@@ -130,7 +129,6 @@ export default function Service({service,servicesState,ps,fs,CheckUserClicked}) 
         event.preventDefault();
         deleteService(service.id).then(r => console.log(r));
         setOpenDelete(false);
-        console.log(servicesState);
 
         let index = -1;
         servicesState.forEach((stateService,i) => {
@@ -139,11 +137,9 @@ export default function Service({service,servicesState,ps,fs,CheckUserClicked}) 
             }
         });
 
-        console.log(index);
         if (index > -1) {
             servicesState.splice(index, 1);
         }
-        console.log(servicesState);
         fs(!ps);
 
     };

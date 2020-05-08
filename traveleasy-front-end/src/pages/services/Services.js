@@ -6,7 +6,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import Filter from "./Filter";
+import Filter from "../../common/drawers/filter/Filter";
 
 const useStyles = makeStyles((theme) => ({
 
@@ -71,7 +71,6 @@ export default function Services() {
     if(typeof services !== 'undefined'){
         mappedServices = mapServices();
     }
-    console.log("Services");
 
     return(
         <div className={classes.center}>

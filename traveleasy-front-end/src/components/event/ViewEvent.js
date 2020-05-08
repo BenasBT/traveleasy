@@ -106,8 +106,6 @@ export default function ViewEvent({open,handleClose,event,currentUser,onEditClic
             editRequest.end_time = "";
         }
 
-
-        console.log(editRequest);
         addServiceToEvents(editRequest).then();
     };
 
@@ -157,8 +155,8 @@ export default function ViewEvent({open,handleClose,event,currentUser,onEditClic
         return false;
     };
 
-    let onCheckProviderClick = (event) =>{
-        event.preventDefault();
+    let onCheckProviderClick = (e) =>{
+        e.preventDefault();
         history.push("profile/"+ event.service.user.id);
     };
 

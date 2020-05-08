@@ -113,7 +113,11 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
         }
     };
 
-
+    let handleCloseAndClearChecks = () =>{
+        setIsDataSet(false);
+        setFixedDateCheck(false);
+        handleClose();
+    };
 
     let checkEvent = () =>{
         return Object.values(event).length >= 1
@@ -125,6 +129,7 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
         setFixedDate(true);
         setFixedDateCheck(true);
     }if(!isDataSet){
+        console.log("We are setting values");
         setIsDataSet(true);
         setPplCnt(event.people_count);
         setStime(event.start_time);
@@ -134,7 +139,7 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
     }
 
     return(
-        <MyModal modalHeader={`Edit ${event.service.name} to events`} open={open} handleClose={handleClose}>
+        <MyModal modalHeader={`Edit ${event.service.name} to events`} open={open} handleClose={handleCloseAndClearChecks}>
             <Card>
                 <FormControl component="fieldset" >
                     <FormGroup aria-label="position" >
@@ -281,7 +286,7 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
 
                             <Button color=""
                                     variant="contained"
-                                    onClick={handleClose}
+                                    onClick={handleCloseAndClearChecks}
 
                             >Cancel</Button>
 

@@ -31,15 +31,12 @@ export default function UserDrawer ({open,handleClose}) {
         event.preventDefault();
         localStorage.removeItem(ACCESS_TOKEN);
         dispatch(clearUser());
-        console.log("Logout");
         handleClose();
         history.push("/")
     };
 
     let onAdmin = (event) => {
         event.preventDefault();
-
-        console.log("onAdmin");
         history.push("/admin");
 
     };
@@ -53,7 +50,6 @@ export default function UserDrawer ({open,handleClose}) {
 
     let onMyProfile = (event) => {
         event.preventDefault();
-        console.log("onMyProfile");
         history.push("/profile/" + currentUser.id);
 
     };

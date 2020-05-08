@@ -76,7 +76,6 @@ export const addServiceToEvents = async (addRequest) =>{
         };
         const res = await apiClient.post("/scheduler/add",addRequest,{headers});
         let responce = res;
-        console.log(responce);
 
     }catch (e) {
         console.log(e);
@@ -92,7 +91,6 @@ export const editService = async (editRequest) =>{
         };
         const res = await apiClient.patch("/service/edit",editRequest,{headers});
         let responce = res;
-        console.log(responce);
 
     }catch (e) {
         console.log(e);
@@ -103,8 +101,6 @@ export const editService = async (editRequest) =>{
 
 export const addServiceFiles = async (addRequestFiles) =>{
     try {
-        console.log(addRequestFiles);
-
         const headers = {
             'Authorization':localStorage.getItem(ACCESS_TOKEN)
         };
@@ -216,7 +212,7 @@ export const getScheduler = async () =>{
 };
 
 
-export const deleteEvent = async (id) =>{
+export const SenddeleteEvent = async (id) =>{
     try {
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.delete("/scheduler/delete/" + id,{headers});

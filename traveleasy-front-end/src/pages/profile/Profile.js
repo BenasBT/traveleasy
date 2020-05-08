@@ -45,12 +45,9 @@ export default function Profile() {
     const classes = useStyles();
 
     useEffect(() => {
-        console.log(id);
         getUser(id).then(user => {
             setUser(user);
         });
-        console.log("user");
-        console.log(user);
 
     }, []);
 

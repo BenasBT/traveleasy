@@ -1,11 +1,11 @@
 import {createStore,combineReducers} from 'redux';
 import currentUserReducer from './currentUser'
-import categoryReducer from "./category";
+import calendarReducer from "./calendar";
 
 
 const rootReducer = combineReducers({
     currentUserReducer,
-    categoryReducer
+    calendarReducer
 });
 
 export default rootReducer;

@@ -75,7 +75,6 @@ export default function UserServices() {
     if(typeof services !== 'undefined'){
         mappedServices = mapServices();
     }
-    console.log("UserServices")
     return(
         <div className={classes.center}>
             <p>Services:</p>
