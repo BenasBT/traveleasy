@@ -1,11 +1,9 @@
 package com.traveleasy.traveleasybackend.controllers;
 
+import com.traveleasy.traveleasybackend.models.PriceTypes;
 import com.traveleasy.traveleasybackend.models.RoleName;
 import com.traveleasy.traveleasybackend.models.StatusName;
-import com.traveleasy.traveleasybackend.models.entities.CategoryEntity;
-import com.traveleasy.traveleasybackend.models.entities.PhotoEntity;
-import com.traveleasy.traveleasybackend.models.entities.ServiceEntity;
-import com.traveleasy.traveleasybackend.models.entities.UserEntity;
+import com.traveleasy.traveleasybackend.models.entities.*;
 import com.traveleasy.traveleasybackend.payload.AddServiceRequest;
 import com.traveleasy.traveleasybackend.repositories.*;
 import com.traveleasy.traveleasybackend.security.CurrentUser;
@@ -52,7 +50,10 @@ public class ServiceController {
     private RoleRepository roleRepository;
 
     @Autowired
-    private PhotoRepository photoRepository;
+    private PriceTypeRepository priceTypeRepository;
+
+    @Autowired
+    private MarkedRepository markedRepository;
 
     DateFormat timeFormat = new SimpleDateFormat("HH:mm");
     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -62,6 +63,12 @@ public class ServiceController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public List<ServiceEntity> getServices() {
         return serviceRepository.findAll();
+    }
+
+    @GetMapping("/prices")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public List<PriceTypeEntity> getPrices() {
+        return priceTypeRepository.findAll();
     }
 
     @GetMapping("/user/{id}")
@@ -80,7 +87,81 @@ public class ServiceController {
     public ServiceEntity getMyServices(@PathVariable("id") long id) {
 
         return serviceRepository.findById(id).orElseThrow(()->new RuntimeException("Service not found")) ;
+    }
 
+    @GetMapping("/mark/{id}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> markService(@PathVariable("id") long id,
+                                         @CurrentUser UserPrincipal userPrincipal) {
+
+        MarkedSericeEntity markedSericeEntity = new MarkedSericeEntity();
+        UserEntity userEntity = userRepository.findById(userPrincipal.getId())
+                .orElseThrow( () -> new RuntimeException("User not found"));
+
+        List<MarkedSericeEntity> markedSericeEntities = markedRepository.findAllByUser(userEntity.getId());
+
+        for(MarkedSericeEntity mse : markedSericeEntities){
+            if(mse.getService().getId() == id){
+                return new ResponseEntity<>("this service already marked",HttpStatus.ALREADY_REPORTED);
+            }
+        }
+        markedSericeEntity.setService(
+                serviceRepository.findById(id).orElseThrow(() -> new RuntimeException("Service not found"))
+        );
+        markedSericeEntity.setUser(userEntity);
+
+        markedRepository.save(markedSericeEntity);
+        return new ResponseEntity<>("Ok",HttpStatus.OK) ;
+    }
+
+    @GetMapping("/unmark/{id}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> unmarkService(@PathVariable("id") long id,
+                                         @CurrentUser UserPrincipal userPrincipal) {
+
+        markedRepository.delete(markedRepository.findAllByUserAndService(userPrincipal.getId(),id)
+                .orElseThrow( () -> new RuntimeException("Marked service not found")));
+        return new ResponseEntity<>("Ok" , HttpStatus.OK);
+    }
+
+    @GetMapping("/approve/{id}")
+    @PreAuthorize("hasRole('ROLE_USER')") //TODO FIX TO ADMIN
+    public ResponseEntity<?> aproveService(@PathVariable("id") long id,
+                                           @CurrentUser UserPrincipal userPrincipal) {
+
+        ServiceEntity serviceEntity = serviceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Service not found"));
+
+        serviceEntity.setStatus(StatusName.ACTIVE);
+        serviceRepository.save(serviceEntity);
+
+        return new ResponseEntity<>("Ok" , HttpStatus.OK);
+    }
+
+    @GetMapping("/deny/{id}")
+    @PreAuthorize("hasRole('ROLE_USER')")//TODO FIX TO ADMIN
+    public ResponseEntity<?> denyService(@PathVariable("id") long id,
+                                           @CurrentUser UserPrincipal userPrincipal) {
+
+        ServiceEntity serviceEntity = serviceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Service not found"));
+
+        serviceEntity.setStatus(StatusName.DENIED);
+        serviceRepository.save(serviceEntity);
+
+        return new ResponseEntity<>("Ok" , HttpStatus.OK);
+    }
+
+    @GetMapping("/marked")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public List<ServiceEntity> getMarked(@CurrentUser UserPrincipal userPrincipal) {
+
+        List<MarkedSericeEntity> markedSericeEntities = markedRepository.findAllByUser(userPrincipal.getId());
+        List<ServiceEntity> serviceEntities = new ArrayList<>();
+        for(MarkedSericeEntity marked: markedSericeEntities){
+            serviceEntities.add(marked.getService());
+        }
+        return serviceEntities;
     }
 
     private AddServiceRequest formatServiceRequest(JSONObject jsonObject){
@@ -117,6 +198,9 @@ public class ServiceController {
 
 
         addServiceRequest.setPrice(jsonObject.getDouble("price"));
+        addServiceRequest.setPrice_type(
+                PriceTypes.valueOf(jsonObject.getString("price_type"))
+        );
 
         String date = jsonObject.getString("start_date");
         if(!date.equals("")) {
@@ -130,18 +214,20 @@ public class ServiceController {
             log.error("addServiceRequest getEnd_date {}",addServiceRequest.getEnd_date());
 
         }
-
-        addServiceRequest.setStart_time(
+        if(!jsonObject.getString("start_time").equals("")) {
+            addServiceRequest.setStart_time(
 //                    new java.sql.Time(formatter.parse(
-                jsonObject.getString("start_time")
+                    jsonObject.getString("start_time")
 //                    ).getTime())
-        );
-
-        addServiceRequest.setEnd_time(
+            );
+        }
+        if(!jsonObject.getString("end_time").equals("")) {
+            addServiceRequest.setEnd_time(
 //                    new java.sql.Time(formatter.parse(
-                jsonObject.getString("end_time")
+                    jsonObject.getString("end_time")
 //                    ).getTime())
-        );
+            );
+        }
 
         addServiceRequest.setMin_people_count(jsonObject.getInt("min_people_count"));
 
@@ -166,30 +252,37 @@ public class ServiceController {
         serviceEntity.setDescription(addServiceRequest.getDescription());
 
         try {
-            serviceEntity.setStart_date(
-                    fixDate(dateFormat.parse(addServiceRequest.getStart_date()))//Timezone bug ?
-            );
+            if(addServiceRequest.getStart_date() !=null){
+                serviceEntity.setStart_date(
+                        fixDate(dateFormat.parse(addServiceRequest.getStart_date()))//Timezone bug ?
+                );
+            }
 
-            serviceEntity.setStart_time(
-                    new Time(timeFormat.parse(addServiceRequest.getStart_time()).getTime())
-            );
+            if(addServiceRequest.getStart_time() !=null) {
+                serviceEntity.setStart_time(
+                        new Time(timeFormat.parse(addServiceRequest.getStart_time()).getTime())
+                );
+            }
 
+            if(addServiceRequest.getEnd_date() !=null) {
+                serviceEntity.setEnd_date(
+                        fixDate(dateFormat.parse(addServiceRequest.getEnd_date())) //Timezone bug ?
+                );
+            }
 
-            serviceEntity.setEnd_date(
+            if(addServiceRequest.getStart_time() !=null) {
+                serviceEntity.setEnd_time(
+                        new Time(timeFormat.parse(addServiceRequest.getEnd_time()).getTime())
+                );
+            }
 
-                    fixDate(dateFormat.parse(addServiceRequest.getEnd_date())) //Timezone bug ?
-            );
-
-
-            serviceEntity.setEnd_time(
-                    new Time( timeFormat.parse(addServiceRequest.getEnd_time()).getTime())
-            );
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
 
         serviceEntity.setPrice(addServiceRequest.getPrice());
+        serviceEntity.setPrice_type(addServiceRequest.getPrice_type());
 
         serviceEntity.setMin_people_count(addServiceRequest.getMin_people_count());
         serviceEntity.setMax_people_count(addServiceRequest.getMax_people_count());
@@ -222,8 +315,6 @@ public class ServiceController {
     public ResponseEntity<?> addService(@CurrentUser UserPrincipal userPrincipal,
                                       @RequestParam("file") MultipartFile[] files,
                                       @RequestParam("data") String addServiceRequestRaw){
-
-
 
         JSONObject jsonObject = new JSONObject(addServiceRequestRaw);
 

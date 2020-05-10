@@ -63,7 +63,7 @@ export default function Header(){
         }
     };
 
-    let onActivityClick = (event) =>{
+    let onServicesClick = (event) =>{
         event.preventDefault();
         history.push("/services");
 
@@ -246,7 +246,7 @@ export default function Header(){
                     </IconButton>
 
                     <Typography align="center" variant="h6" className={classes.title}
-                                onClick={onActivityClick}
+                                onClick={onServicesClick}
                                 onMouseEnter={onMouseEnter}>
                         Services
                     </Typography>
@@ -277,7 +277,7 @@ export default function Header(){
                 </Toolbar>
             </AppBar>
 
-            <Filter open={openSearch} handleClose={onSearchClick}/>
+            <Filter open={openSearch} handleClose={onSearchClick} updateServices={onServicesClick}/>
 
             <LoginPage  open={openLogin} handleClose={onCloseLogin}/>
 

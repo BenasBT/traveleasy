@@ -5,6 +5,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import {Card,CardMedia,CardContent,Typography} from "@material-ui/core";
 import {getMyServices, getUser} from '../../utils/APIUtils';
 import UserServices from "../services/UserServices";
+import MarkedServices from "../services/MarkedServices";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -44,6 +45,16 @@ export default function Profile() {
     //
     const classes = useStyles();
 
+    let checkUser = (user) => {
+        if(currentUser !== null && user !== null) {
+            if (user.id === currentUser.id) {
+                return true;
+            }
+        }
+        return false
+
+    };
+
     useEffect(() => {
         getUser(id).then(user => {
             setUser(user);
@@ -60,9 +71,6 @@ export default function Profile() {
                                     src={user.imageUrl}
                                     className={classes.profile_image}
                                 />
-
-
-
                         ) :null
                     }
 
@@ -78,7 +86,9 @@ export default function Profile() {
                         </Typography>
                     </CardContent>
 
-                <UserServices/>
+                    <UserServices/>
+                    {checkUser(user) ? <MarkedServices/> : null}
+
                 </Card>
 
 

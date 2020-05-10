@@ -18,3 +18,9 @@ export const setCalendarAction = (calendar) =>{
     }
 };
 
+export const setFilter = (filter) =>{
+    return{
+        type:'FILTER',
+        filter: filter
+    }
+};

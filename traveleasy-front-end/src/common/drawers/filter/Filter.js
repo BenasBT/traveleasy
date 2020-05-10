@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState,createRef} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -18,6 +18,10 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Button from "@material-ui/core/Button";
 import {CardContent} from "@material-ui/core";
+import {getAllCategories, getPriceTypes} from "../../../utils/APIUtils";
+import MenuItem from "@material-ui/core/MenuItem";
+import {useDispatch, useSelector} from "react-redux";
+import {setFilter} from '../../../redux/actions/index'
 
 const drawerWidth = 240;
 
@@ -43,9 +47,33 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.default,
         padding: theme.spacing(3),
     },
+
+    root_list:{
+        width: '100%',
+        backgroundColor: theme.palette.background.paper,
+        position: 'relative',
+        overflow: 'auto',
+        maxHeight: 100,
+
+    },
+    listSection: {
+        backgroundColor: 'inherit',
+    },
+    ul: {
+
+        backgroundColor: 'inherit',
+        padding: 0,
+        align:"center"
+    },
+    center:{
+        margin: "auto",
+    },
+    p_root: {
+        maxWidth: 345,
+    },
 }));
 
-export default function Filter({open, handleClose}) {
+export default function Filter({open, handleClose,updateServices}) {
     const classes = useStyles();
 
     const [minPrice, setMinPrice] = useState("");
@@ -60,7 +88,13 @@ export default function Filter({open, handleClose}) {
     const [sDate, setSDate] = useState("");
     const [eDate, setEDate] = useState("");
     const [categories, setCategories] = useState([]);
+    const [state, forceStateUpdate] = useState(false);
 
+
+    const filter = useSelector(state => state.filterReducer);
+
+    const dispatch = useDispatch();
+    let myRef = createRef();
     let onChange = (event) => {
 
         const inputId = event.target.id;
@@ -115,27 +149,86 @@ export default function Filter({open, handleClose}) {
             categories.find((element) => element.name === value).checked =
                 !categories.find((element) => element.name === value).checked;
         }
+        forceStateUpdate(!state); //TODO: fix me
     };
 
     let mapCategories = () => {
         return categories.map(cat => (
 
-            <FormControlLabel
-                id={cat.id}
-                value={cat.name}
-                control={<Checkbox color="primary"/>}
-                label={cat.name}
-                labelPlacement="end"
-                onClick={(event) => checkCategory(event)}
-            />
+        <li key={`section-${cat.id}`} className={classes.listSection}>
+            <ul className={classes.ul}>
+                <FormControlLabel
+                    id={cat.id}
+                    value={cat.name}
+                    control={<Checkbox checked={cat.checked} color="primary"/>}
+                    label={cat.name}
+                    labelPlacement="end"
+                    onClick={(event) => checkCategory(event)}
+                />
+            </ul>
+        </li>
 
         )).filter(cat => cat.props.id !== 999);
     };
 
-    let filter = (event) => {
+    let Filter = (event) => {
         event.preventDefault();
-        console.log("filter");
+
+        let checkedCategories = categories.filter( category => category.checked)
+            .map((category => ({id: category.id, name: category.name})));
+
+        filter.min_price = minPrice;
+        filter.max_price = maxPrice;
+
+        filter.categories =checkedCategories;
+
+        filter.min_people_count = minPplCnt;
+        filter.max_people_count = maxPplCnt;
+
+        filter.start_date = sDate;
+        filter.start_time = sTime;
+        filter.end_date = eDate;
+        filter.end_time = eTime;
+
+        //update Services
+        updateServices(event);
+        dispatch(setFilter(filter));
     };
+
+    useEffect(() => {
+
+        getAllCategories().then(
+            (r) => {
+                setCategories(r.filter(cat => cat.valid).map( cat => ({
+                    id:cat.id,
+                    name:cat.name,
+                    checked:true
+                })));
+
+        dispatch(setFilter(
+            {
+                max_price: "",
+                min_price: "",
+
+                categories: r.map( cat => ({
+                    id:cat.id,
+                    name:cat.name,
+                    checked:true
+                })),
+
+                min_people_count: "",
+                max_people_count: "",
+
+                start_date: "",
+                start_time: "",
+
+                end_date: "",
+                end_time: "",
+            }
+        ));
+
+        });
+    }, []);
 
 
     return (
@@ -168,6 +261,13 @@ export default function Filter({open, handleClose}) {
                     />
                 </ListItem>
                 <Divider/>
+
+                <FormGroup aria-label="position" row>
+                    <List className={classes.root_list} subheader={<li />}>
+                    {mapCategories()}
+                    </List>
+                </FormGroup>
+
                 <Typography gutterBottom variant="h5" component="h2">
                     People count
                 </Typography>
@@ -190,7 +290,6 @@ export default function Filter({open, handleClose}) {
 
                 <ListItem>
                     <FormGroup aria-label="position" row>
-
                         <TextField
                             id="sDate"
                             label="Start Date"
@@ -254,7 +353,7 @@ export default function Filter({open, handleClose}) {
                 <ListItem>
                     <Button color="primary"
                             variant="contained"
-                            onClick={filter}
+                            onClick={Filter}
                     >Filter</Button>
                 </ListItem>
 

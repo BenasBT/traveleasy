@@ -1,8 +1,15 @@
 import React from "react";
+import AdminServices from "./AdminServices";
+import AdminCategories from "./AdminCategories";
 
 export default function AdminPage() {
     return(
-        <p>Admin Page</p>
+        <div>
+            <p>Admin Page</p>
+            <AdminServices/>
+            <AdminCategories/>
+        </div>
+
 
     );
 

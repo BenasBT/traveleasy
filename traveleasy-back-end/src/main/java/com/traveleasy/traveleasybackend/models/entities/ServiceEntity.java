@@ -1,6 +1,7 @@
 package com.traveleasy.traveleasybackend.models.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.traveleasy.traveleasybackend.models.PriceTypes;
 import com.traveleasy.traveleasybackend.models.StatusName;
 import lombok.Data;
 import lombok.Getter;
@@ -30,6 +31,10 @@ public class ServiceEntity extends AbstractEntity {
     @Column(name = "price")
     private double price;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "price_type")
+    private PriceTypes price_type;
+
     @JsonFormat(pattern="HH:mm")
     @Column(name = "start_time", columnDefinition="TIME")
     private Time start_time;
@@ -55,6 +60,7 @@ public class ServiceEntity extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private StatusName status;
+
 
     @ManyToMany(fetch = FetchType.LAZY,cascade=CascadeType.REFRESH)
     @JoinTable(name = "service_category",

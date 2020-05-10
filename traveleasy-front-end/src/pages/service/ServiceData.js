@@ -8,6 +8,8 @@ import LoginForm from "../../user/login/LoginForm";
 import RegisterForm from "../../user/register/RegisterForm";
 import Grid from '@material-ui/core/Grid';
 import {isAdmin} from "../../utils/Utils";
+import Divider from '@material-ui/core/Divider';
+import FormGroup from "@material-ui/core/FormGroup";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -20,9 +22,6 @@ const useStyles = makeStyles(theme => ({
         width: '25%',
         borderRadius: 50,
         height: 'auto',
-
-
-
     },
     info :{
         margin:'auto',
@@ -42,7 +41,8 @@ export default function ServiceData({open,
                                     onEditClick,
                                     onDeleteClick,
                                     onCheckProviderClick,
-                                    CheckUserClicked}) {
+                                    CheckUserClicked,
+                                    onMarkClick}) {
     //Picture if exist else some defoult picture
     //Display data
 
@@ -60,8 +60,6 @@ export default function ServiceData({open,
     };
 
     let {id} = useParams();
-    //let serveice = getServiceInfo(id);
-    //let provider = getProviderInfo(serveice.providerId);
 
     let provider = service.user;
 
@@ -87,16 +85,32 @@ export default function ServiceData({open,
     let categories = () =>{
 
         return  (
-            service.service_category.filter((category => category.valid))
+            service.service_category.filter(( category => category.valid ))
                 .map( category => (
                 <Grid item xs={6}>
                     <Card>
                         <CardActionArea>
-                        {category.name}
+                            {category.name}
                         </CardActionArea>
                     </Card>
                 </Grid>
             ))
+        )
+    };
+
+    let notValidcategories = () =>{
+
+        return  (
+            service.service_category.filter(( category => !category.valid  ))
+                .map( category => (
+                    <Grid item xs={6}>
+                        <Card>
+                            <CardActionArea>
+                                {category.name}
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                ))
         )
     };
 
@@ -115,30 +129,46 @@ export default function ServiceData({open,
                             <Typography variant="body2" gutterBottom>
                                 {service.description}
                             </Typography>
-                            <Typography gutterBottom variant="h5" component="h2">
-                                Price: {service.price} &euro;
+                            <Divider   />
+                            <Typography gutterBottom variant="body2" component="h2">
+                                Price: {service.price} &euro; per {service.price_type}
                             </Typography>
+                            <Divider   />
                             Categories:
                             <Grid container spacing={3}>
                             {categories()}
                             </Grid>
-                            <Typography variant="body2" gutterBottom>
+
+                            <Divider   />
+
+                            {service.start_date ?
+                                <Typography variant="body2" gutterBottom>
                                 Start Date: {service.start_date}
-                            </Typography>
+                            </Typography> : null}
+                            {service.end_date ?
                             <Typography variant="body2" gutterBottom>
                                 End Date: {service.end_date}
-                            </Typography>
+                            </Typography> : null}
 
+                            {service.start_time ?
                             <Typography variant="body2" gutterBottom>
                                 Start Time: {service.start_time}
-                            </Typography>
+                            </Typography>: null}
+                            {service.end_time ?
                             <Typography variant="body2" gutterBottom>
                                 End Time: {service.end_time}
-                            </Typography>
+                            </Typography> : null}
 
-                            <Typography variant="body2" gutterBottom>
-                                People: from {service.min_people_count} to {service.max_people_count}
-                            </Typography>
+                            {service.min_people_count !== 0 && service.max_people_count !== 0 ?
+                                <Typography variant="body2" gutterBottom>
+                                    People:  {service.min_people_count !== 0 ?  `from ${service.min_people_count}`
+                                    : null}
+                                    {service.max_people_count !== 0 ?  `to ${service.max_people_count}`
+                                        :null}
+                                </Typography>
+                                :null}
+
+
                             <Typography variant="body2" gutterBottom>
                                 {provider.email ? <Typography variant="body2" gutterBottom>
                                                     Email: {provider.email}
@@ -167,11 +197,9 @@ export default function ServiceData({open,
                                 <Button  color="primary" onClick={event => onDeleteClick(event)}>
                                     Delete
                                 </Button>: null}
-
-                            {CheckUserClicked ||!checkCurrentUser()  ?
-                                <Button size="small" color="primary" onClick={event => onCheckProviderClick(event)}>
-                                    Check Provider
-                                </Button> : null}
+                            <Button size="small" color="primary" onClick={event => onMarkClick(event,service.id)}>
+                                Mark
+                            </Button>
                         </CardActions>
 
                     </Card>

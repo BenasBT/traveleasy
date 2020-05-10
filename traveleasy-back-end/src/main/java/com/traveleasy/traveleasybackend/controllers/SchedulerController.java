@@ -169,12 +169,13 @@ public class SchedulerController {
                         fixDate(dateFormat.parse(date))//Timezone bug ?
                 );
             }
-
-            eventEntity.setStart_time(
-                    new java.sql.Time(formatter.parse(
-                            jsonObject.getString("start_time")
-                    ).getTime())
-            );
+            if (!jsonObject.getString("end_time").equals("")) {
+                eventEntity.setStart_time(
+                        new java.sql.Time(formatter.parse(
+                                jsonObject.getString("start_time")
+                        ).getTime())
+                );
+            }
 
             if(!eventEntity.isFixed_date()) {
 
@@ -185,11 +186,13 @@ public class SchedulerController {
                     );
                 }
 
-                eventEntity.setEnd_time(
-                        new java.sql.Time(formatter.parse(
-                                jsonObject.getString("end_time")
-                        ).getTime())
-                );
+                if (!jsonObject.getString("end_time").equals("")) {
+                    eventEntity.setEnd_time(
+                            new java.sql.Time(formatter.parse(
+                                    jsonObject.getString("end_time")
+                            ).getTime())
+                    );
+                }
             }else {
                 eventEntity.setEnd_date(null);
                 eventEntity.setEnd_time(null);

@@ -38,19 +38,24 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
     const [eTime, setEtime] = useState("17:30");
     const [eDate, setEDate] = useState("");
 
+    const [state,forceStateUpdate] = useState(false);
+
     const classes = useStyles();
 
 
 
 
-    let onFixedDate = (event) => {
-        event.preventDefault();
+    let onFixedDate = (e) => {
+        e.preventDefault();
 
-        if(fixedDate === false){
-            setFixedDate(true)
+        if(event.fixed_date === false){
+            event.fixed_date = true;
+            event.end_time = '17:30'
         }else {
-            setFixedDate(false)
+            event.fixed_date = false;
         }
+        console.log(event.fixed_date);
+        forceStateUpdate(!state);
     };
 
     let showRegisterBox = (event) => {
@@ -77,11 +82,10 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
 
 
 
-    let onChange = (event) => {
+    let onChange = (e) => {
 
-        const inputId = event.target.id;
-        const inputValue = event.target.value;
-
+        const inputId = e.target.id;
+        const inputValue = e.target.value;
         switch(inputId) {
 
             case 'Description':
@@ -89,23 +93,32 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
                 break;
 
             case 'pplCnt':
-                setPplCnt(inputValue);
+                event.people_count = inputValue;
+                forceStateUpdate(!state);
                 break;
 
+            case 'fixedDate':
+
+                break
+
             case 'sTime':
-                setStime(inputValue);
+                event.start_time = inputValue;
+                forceStateUpdate(!state);
                 break;
 
             case 'sDate':
-                setSDate(inputValue);
+                event.start_date = inputValue;
+                forceStateUpdate(!state);
                 break;
 
             case 'eTime':
-                setEtime(inputValue);
+                event.end_time = inputValue;
+                forceStateUpdate(!state);
                 break;
 
             case 'eDate':
-                setEDate(inputValue);
+                event.end_date = inputValue;
+                forceStateUpdate(!state);
                 break;
 
             default:
@@ -125,17 +138,6 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
     };
     if(!checkEvent()){
         return null;
-    }if(!fixedDate && event.fixed_date && !fixedDateCheck){
-        setFixedDate(true);
-        setFixedDateCheck(true);
-    }if(!isDataSet){
-        console.log("We are setting values");
-        setIsDataSet(true);
-        setPplCnt(event.people_count);
-        setStime(event.start_time);
-        setSDate(event.start_date);
-        setEtime(event.end_time);
-        setEDate(event.end_date);
     }
 
     return(
@@ -166,9 +168,9 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
 
                         <FormControlLabel
                             onClick={onFixedDate}
-                            id="1"
+                            id="fixedDate"
                             value="Fixed Date"
-                            control={<Checkbox checked={fixedDate} color="primary" />}
+                            control={<Checkbox checked={event.fixed_date} color="primary" />}
                             label="Fixed Date"
                             labelPlacement="end"
                         />
@@ -177,18 +179,18 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
 
                         <TextField id="pplCnt"
                                    label="People count"
-                                   value={pplCnt}
+                                   value={event.people_count}
                                    onChange={(event) => onChange(event)}
                         />
 
 
-                        {!fixedDate ? <div>
+                        {!event.fixed_date ? <div>
                             <FormGroup aria-label="position" row>
 
                                 <TextField
                                     id="sDate"
                                     label="Start Date"
-                                    value={sDate}
+                                    value={event.start_date}
                                     onChange={(event) => onChange(event)}
                                     type="date"
                                     className={classes.textField}
@@ -199,7 +201,7 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
 
                                 <TextField id="sTime"
                                            label="Start Time"
-                                           value={sTime}
+                                           value={event.start_time}
                                            onChange={(event) => onChange(event)}
                                            type="time"
                                            className={classes.textField}
@@ -219,7 +221,7 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
                                 <TextField
                                     id="eDate"
                                     label="End Date"
-                                    value={eDate}
+                                    value={event.end_date}
                                     onChange={(event) => onChange(event)}
                                     type="date"
                                     className={classes.textField}
@@ -230,7 +232,7 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
 
                                 <TextField id="eTime"
                                            label="End Time"
-                                           value={eTime}
+                                           value={event.end_time}
                                            onChange={(event) => onChange(event)}
                                            type="time"
                                            className={classes.textField}
@@ -249,7 +251,7 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
                                 <TextField
                                     id="sDate"
                                     label="Date"
-                                    value={sDate}
+                                    value={event.start_date}
                                     onChange={(event) => onChange(event)}
                                     type="date"
                                     className={classes.textField}
@@ -260,7 +262,7 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
 
                                 <TextField id="sTime"
                                            label="Time"
-                                           value={sTime}
+                                           value={event.start_time}
                                            onChange={(event) => onChange(event)}
                                            type="time"
                                            className={classes.textField}
@@ -281,7 +283,7 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
                         <CardActions>
                             <Button color="primary"
                                     variant="contained"
-                                    onClick={e => editEvent(e,event,fixedDate,sDate,sTime,eDate,eTime,pplCnt)}
+                                    onClick={e => editEvent(e,event)}
                             >Submit</Button>
 
                             <Button color=""

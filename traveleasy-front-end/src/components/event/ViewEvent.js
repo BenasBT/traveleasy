@@ -13,14 +13,25 @@ import {makeStyles} from "@material-ui/core/styles";
 import {addServiceToEvents} from "../../utils/APIUtils";
 import {isAdmin} from "../../utils/Utils";
 import {useHistory} from "react-router-dom";
+import Divider from "@material-ui/core/Divider";
 
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        '& > *': {
-            margin: theme.spacing(1),
-            width: '25ch',
-        },
+        maxWidth: 345,
+    },
+    image :{
+        display:'block',
+        marginLeft:'auto',
+        marginRight:'auto',
+        width: '25%',
+        borderRadius: 50,
+        height: 'auto',
+    },
+    info :{
+        margin:'auto',
+        textAlign: 'center',
+        width: '50%'
     },
 }));
 
@@ -208,30 +219,42 @@ export default function ViewEvent({open,handleClose,event,currentUser,onEditClic
                     <Typography variant="body2" gutterBottom>
                         {event.service.description}
                     </Typography>
-                    <Typography gutterBottom variant="h5" component="h2">
-                        Price: {event.service.price} &euro;
+                    <Divider   />
+                    <Typography gutterBottom variant="body2" component="h2">
+                        Price: {event.service.price} &euro; per {event.service.price_type}
                     </Typography>
+                    <Divider   />
                     Categories:
                     <Grid container spacing={3}>
                         {categories()}
                     </Grid>
-                    <Typography variant="body2" gutterBottom>
-                        Start Date: {event.service.start_date}
-                    </Typography>
-                    <Typography variant="body2" gutterBottom>
-                        End Date: {event.service.end_date}
-                    </Typography>
+                    <Divider   />
 
-                    <Typography variant="body2" gutterBottom>
-                        Start Time: {event.service.start_time}
-                    </Typography>
-                    <Typography variant="body2" gutterBottom>
-                        End Time: {event.service.end_time}
-                    </Typography>
+                    {event.start_date ?
+                        <Typography variant="body2" gutterBottom>
+                            Start Date: {event.start_date}
+                        </Typography> : null}
+                    {event.end_date ?
+                        <Typography variant="body2" gutterBottom>
+                            End Date: {event.end_date}
+                        </Typography> : null}
 
-                    <Typography variant="body2" gutterBottom>
-                        People :from {event.service.min_people_count} to {event.service.max_people_count}
-                    </Typography>
+                    {event.start_time ?
+                        <Typography variant="body2" gutterBottom>
+                            Start Time: {event.start_time}
+                        </Typography>: null}
+                    {event.end_time ?
+                        <Typography variant="body2" gutterBottom>
+                            End Time: {event.end_time}
+                        </Typography> : null}
+
+                    {event.people_count !== 0 ?
+                        <Typography variant="body2" gutterBottom>
+                            People:  {event.people_count !== 0 ?  `${event.people_count}`
+                            : null}
+                        </Typography>
+                        :null}
+
                     <Typography variant="body2" gutterBottom>
                         {provider.email ? <Typography variant="body2" gutterBottom>
                             Email: {provider.email}
@@ -247,15 +270,14 @@ export default function ViewEvent({open,handleClose,event,currentUser,onEditClic
 
                 <CardActions>
 
-                    {checkCurrentUser() ?
+
                         <Button size="small" color="primary" onClick={event => onEditClick(event)}>
                             Edit
-                        </Button>: null}
+                        </Button>
 
-                    {checkCurrentUser() ?
                         <Button  color="primary" onClick={e => onDeleteClick(e,event)}>
                             Delete
-                        </Button>: null}
+                        </Button>
 
                     {!checkCurrentUser()  ?
                         <Button size="small" color="primary" onClick={event => onCheckProviderClick(event)}>

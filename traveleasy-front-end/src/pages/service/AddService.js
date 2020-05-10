@@ -12,10 +12,14 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
 import {getAllCategories,
         addServiceFiles,
-        getPhoto} from '../../utils/APIUtils'
+        getPriceTypes} from '../../utils/APIUtils'
 import {useHistory} from "react-router-dom";
 
-
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import {Typography} from "@material-ui/core";
+import InputAdornment from '@material-ui/core/InputAdornment';
 export default function AddService() {
 
     const currentUser = useSelector(state => state.currentUserReducer);
@@ -40,6 +44,10 @@ export default function AddService() {
 
     const [files, setFiles] = useState([]);
 
+    const [openPriceType, setOpenPriceType] = useState(false);
+    const [priceType, setPriceType] = useState(null);
+    const [priceTypes, setPriceTypes] = useState(null);
+
     const history = useHistory();
 
     const useStyles = makeStyles((theme) => ({
@@ -48,7 +56,11 @@ export default function AddService() {
                 margin: theme.spacing(1),
                 width: '25ch',
             },
+
         },
+        select:{
+            width:"130px"
+        }
     }));
 
 
@@ -69,6 +81,7 @@ export default function AddService() {
             newCategory:newCategory,
 
             price: price,
+            price_type: priceType,
 
             start_date:sDate,
             start_time:sTime,
@@ -217,6 +230,25 @@ export default function AddService() {
          )).filter(cat => cat.props.id !== 999 );
      };
 
+    const handleChangePriceType = (event) => {
+        setPriceType(event.target.value);
+    };
+
+    const handleClosePriceType = () => {
+        setOpenPriceType(false);
+    };
+
+    const handleOpenPriceType = () => {
+        setOpenPriceType(true);
+    };
+
+    let mapPricceTypes = () =>{
+
+
+
+
+    };
+
     const classes = useStyles();
 
     useEffect(() => {
@@ -224,14 +256,25 @@ export default function AddService() {
          getAllCategories().then(
              (r) => {
 
-                 setCategories(r.map( cat => ({
+                 setCategories(r.filter(cat => cat.valid).map( cat => ({
                      id:cat.id,
                      name:cat.name,
                      checked:false
                  })))
+             });
 
-             }
-        );
+        getPriceTypes().then( unmapedPticeTypes =>{
+            setPriceTypes(
+                unmapedPticeTypes.map(priceType =>
+                    (
+                        <MenuItem value={priceType.name}>{priceType.name}</MenuItem>
+                    ))
+            );
+            // setPriceType(unmapedPticeTypes[0].name);
+
+        });
+
+
     }, []);
 
 
@@ -276,13 +319,32 @@ export default function AddService() {
                            onChange={(event) => onChange(event)}
                            style={{display:showOtherCategory()}}
                 />
+                <FormGroup aria-label="position" row>
+                    <TextField id="price"
+                               label="Displayed Price"
+                               value={price}
+                               onChange={(event) => onChange(event)}
+                               InputProps={{
+                                   endAdornment: <InputAdornment position="start">&euro; Per</InputAdornment>,
+                               }}
+                    />
 
-                <TextField id="price"
-                           label="Displayed Price"
-                           value={price}
-                           onChange={(event) => onChange(event)}
-                />
+                    <TextField
+                        select
+                        label="Price Type"
+                        id="price_types"
+                        value={priceType}
+                        open={openPriceType}
+                        className={classes.select}
+                        onClose={handleClosePriceType}
+                        onOpen={handleOpenPriceType}
+                        onChange={handleChangePriceType}
 
+                    >
+                        {priceTypes}
+
+                    </TextField>
+                </FormGroup>
                 <FormGroup aria-label="position" row>
                     <TextField id="minPplCnt"
                                label="Mim people count"

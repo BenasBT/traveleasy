@@ -44,7 +44,6 @@ export default function CartDrawer ({open,handleClose,events,deleteEvent,editEve
                             <IconButton aria-label="delete" color="primary" onClick={e=> deleteEvent(e,event)} >
                                 <DeleteIcon />
                             </IconButton>
-
                         </ListItem>
                         <Divider/>
                     </div>

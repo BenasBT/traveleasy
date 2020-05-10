@@ -16,11 +16,12 @@ import {
     addServiceFiles,
     getService,
     editService,
-    deletePhoto
+    deletePhoto, getPriceTypes
 } from '../../utils/APIUtils'
 import {useHistory, useParams} from 'react-router-dom';
 import {CardActions, Card, Typography} from "@material-ui/core";
 import MyModal from "../../components/modal/MyModal";
+import MenuItem from "@material-ui/core/MenuItem";
 
 
 export default function EditService() {
@@ -33,7 +34,11 @@ export default function EditService() {
     const [categories,setCategories ] = useState([]);
 
     const [newCategory,setNewCategory ] = useState("");
+
     const [price,setPrice ] = useState("");
+    const [priceType, setPriceType] = useState(null);
+    const [priceTypes, setPriceTypes] = useState(null);
+    const [openPriceType, setOpenPriceType] = useState(false);
 
     const [minPplCnt,setMinPplCnt] = useState("");
     const [maxPplCnt,setMaxPplCnt] = useState("");
@@ -59,6 +64,9 @@ export default function EditService() {
                 width: '25ch',
             },
         },
+        select:{
+            width:"130px"
+        }
     }));
 
     const history = useHistory();
@@ -114,6 +122,7 @@ export default function EditService() {
             newCategory:newCategory,
 
             price: price,
+            price_type: priceType,
 
             start_date:sDate,
             start_time:sTime,
@@ -298,6 +307,19 @@ export default function EditService() {
         }else return null;
     };
 
+    const handleChangePriceType = (event) => {
+        setPriceType(event.target.value);
+    };
+
+    const handleClosePriceType = () => {
+        setOpenPriceType(false);
+    };
+
+    const handleOpenPriceType = () => {
+        setOpenPriceType(true);
+    };
+
+
     useEffect(() => {
         getService(id).then(
             service =>
@@ -321,6 +343,7 @@ export default function EditService() {
                     setName(service.name);
                     setDescription(service.description);
                     setPrice(service.price);
+                    setPriceType(service.price_type);
                     setMinPplCnt(service.min_people_count);
                     setMaxPplCnt(service.max_people_count);
                     setSDate(service.start_date);
@@ -335,6 +358,17 @@ export default function EditService() {
 
             }
         );
+
+        getPriceTypes().then( unmapedPticeTypes =>{
+            setPriceTypes(
+                unmapedPticeTypes.map(priceType =>
+                    (
+                        <MenuItem value={priceType.name}>{priceType.name}</MenuItem>
+                    ))
+            );
+            // setPriceType(unmapedPticeTypes[0].name);
+
+        });
 
     }, []);
 
@@ -412,12 +446,29 @@ export default function EditService() {
                                onChange={(event) => onChange(event)}
                                style={{display:showOtherCategory()}}
                     />
-
+                    <FormGroup aria-label="position" row>
                     <TextField id="price"
                                label="Displayed Price"
                                value={price}
                                onChange={(event) => onChange(event)}
                     />
+
+                    <TextField
+                        select
+                        label="Price Type"
+                        id="price_types"
+                        value={priceType}
+                        open={openPriceType}
+                        className={classes.select}
+                        onClose={handleClosePriceType}
+                        onOpen={handleOpenPriceType}
+                        onChange={handleChangePriceType}
+
+                    >
+                        {priceTypes}
+
+                    </TextField>
+                    </FormGroup>
 
                     <FormGroup aria-label="position" row>
                         <TextField id="minPplCnt"

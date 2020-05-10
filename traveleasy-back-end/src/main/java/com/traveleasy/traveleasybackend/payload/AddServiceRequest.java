@@ -1,5 +1,6 @@
 package com.traveleasy.traveleasybackend.payload;
 
+import com.traveleasy.traveleasybackend.models.PriceTypes;
 import com.traveleasy.traveleasybackend.models.entities.CategoryEntity;
 import lombok.Data;
 
@@ -16,6 +17,7 @@ public class AddServiceRequest {
     private String description;
 
     private double price;
+    private PriceTypes price_type;
 
     private List<CategoryEntity> categoryEntities;
 

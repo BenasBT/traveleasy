@@ -60,6 +60,7 @@ export const getAllCategories = async () =>{
     try {
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.get("/category",{headers});
+        console.log(res.data);
         return res.data;
     }catch (e) {
         console.log(e);
@@ -255,4 +256,119 @@ export const getEvent = async (id) =>{
     }
     return null;
 
-}
+};
+
+export const getPriceTypes = async () =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("/service/prices",{headers});
+        console.log(res);
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
+
+export const markService = async (id) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("/service/mark/" + id,{headers});
+        console.log(res);
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
+
+export const unmarkService = async (id) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("/service/unmark/" + id,{headers});
+        console.log(res);
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
+
+
+export const getMarkedService = async () =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("/service/marked/" ,{headers});
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
+
+export const approveService = async (id) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("/service/approve/" + id ,{headers});
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
+
+export const denyService = async (id) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("/service/deny/" + id ,{headers});
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+};
+
+export const approveCategory = async (id) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("/category/approve/" + id ,{headers});
+        console.log(id);
+        console.log(res);
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
+
+export const deleteCategory = async (id) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.delete("/category/" + id ,{headers});
+        console.log(res);
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+};

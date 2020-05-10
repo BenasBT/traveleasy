@@ -53,7 +53,8 @@ export default function UserServices() {
                         <ul className={classes.ul}>
                             <Service service={ser}
                                      servicesState={services}
-                                     ps={state} fs={forceState} CheckUserClicked={true}/>
+                                     ps={state} fs={forceState}
+                                     CheckUserClicked={true}/>
                         </ul>
                     </li>
 

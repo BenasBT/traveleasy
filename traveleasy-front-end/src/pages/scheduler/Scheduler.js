@@ -99,43 +99,46 @@ export default function Scheduler() {
 
     };
 
-    let SubmitEditEvent = (e,event,fixedDate,sDate,sTime,eDate,eTime,pplCnt) =>{
+    let SubmitEditEvent = (e,event) =>{
         e.preventDefault();
+
         const editRequest = {
 
             id:event.id,
             service:event.service,
 
-            fixed_date:fixedDate,
-            start_date: sDate,
-            start_time:sTime,
+            fixed_date:event.fixed_date,
+            start_date: event.start_date,
+            start_time:event.start_time,
 
-            end_date:eDate,
-            end_time:eTime,
+            end_date:event.end_date,
+            end_time:event.end_time,
 
-            people_count: pplCnt
+            people_count: event.people_count
         };
 
 
-        if(pplCnt === ''){
+        if(event.people_count === ''){
             editRequest.people_count =0;
         }
-        if(sTime === null){
+        if(event.start_time === null){
             editRequest.start_date = "";
         }
-        if(sDate === null){
+        if(event.start_date === null){
             editRequest.start_date = "";
         }
-        if(eDate === null){
+        if(event.end_date === null){
             editRequest.end_date = "";
         }
-        if(eTime === null){
+        if(event.end_time === null){
             editRequest.end_time = "";
         }
-        if(fixedDate){
+        if(event.fixed_date){
             editRequest.end_date = "";
             editRequest.end_time = "";
         }
+
+        console.log(editRequest);
 
         SendEditEvent(editRequest).then(() =>{
             getScheduler().then(events => {

@@ -30,6 +30,12 @@ CREATE TABLE category (
   PRIMARY KEY (id)
 );
 
+CREATE TABLE price_types (
+  id BIGINT NOT NULL,
+  name varchar(255) NOT NULL,
+  PRIMARY KEY (id)
+);
+
 CREATE TABLE photos (
   id BIGINT NOT NULL AUTO_INCREMENT,
   service_id BIGINT,
@@ -44,6 +50,7 @@ CREATE TABLE service (
   name varchar(255) NOT NULL,
   description varchar(255),
   price double,
+  price_type varchar(255) NOT NULL,
   start_time time,
   end_time time,
   start_date date,
@@ -75,9 +82,10 @@ CREATE TABLE event (
 );
 
 CREATE TABLE marked (
+    id BIGINT NOT NULL AUTO_INCREMENT,
     user_id BIGINT NOT NULL REFERENCES users(id),
     service_id BIGINT NOT NULL REFERENCES service(id),
-    PRIMARY KEY (user_id,service_id)
+    PRIMARY KEY (id)
 );
 
 
@@ -96,3 +104,9 @@ insert into category (id,name,valid) value (8,'Rent',true);
 
 
 insert into category (id,name,valid) value (999,'Other',true);
+
+insert into price_types (id,name) value (0,'PERSON');
+insert into price_types (id,name) value (1,'HOUR');
+insert into price_types (id,name) value (2,'DAY');
+insert into price_types (id,name) value (3,'UNIT');
+insert into price_types (id,name) value (4,'KM');

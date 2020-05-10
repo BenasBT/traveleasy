@@ -7,7 +7,11 @@ import {makeStyles,useTheme} from "@material-ui/core/styles";
 import {useSelector} from "react-redux";
 import {useHistory, useLocation} from "react-router-dom";
 import ServiceData from "../../pages/service/ServiceData";
-import {deleteService} from '../../utils/APIUtils';
+import {deleteService,
+        markService,
+        unmarkService,
+        approveService,
+        denyService} from '../../utils/APIUtils';
 import MyModal from "../modal/MyModal";
 import FormGroup from "@material-ui/core/FormGroup";
 import AddService from "../../common/addform";
@@ -29,7 +33,7 @@ const useStyles = makeStyles({
     }
 });
 
-export default function Service({service,servicesState,ps,fs,CheckUserClicked}) {
+export default function Service({service,servicesState,ps,fs,CheckUserClicked,marked,admin}) {
 
     const [photos, setPhotos] = useState([]);
     const [thumb, setThumb] = useState(0);
@@ -54,7 +58,7 @@ export default function Service({service,servicesState,ps,fs,CheckUserClicked}) 
 
 
     let checkCurrentUser = () =>{
-        if (currentUser )
+
         if(currentUser.id === service.user.id){
             return true;
         }
@@ -110,9 +114,27 @@ export default function Service({service,servicesState,ps,fs,CheckUserClicked}) 
     };
 
 
-    let onMarkClick = (event) =>{
+    let onMarkClick = (event,id) =>{
         event.preventDefault();
-        setOpenService(true);
+        markService(id).then(r => console.log(r));
+
+    };
+
+    let onUnmarkClick = (event) =>{
+        event.preventDefault();
+        unmarkService(service.id).then(r => console.log(r));
+        let index = -1;
+        servicesState.forEach((stateService,i) => {
+            if(stateService.id === service.id){
+                index=i;
+            }
+        });
+
+        if (index > -1) {
+            servicesState.splice(index, 1);
+        }
+        fs(!ps);
+
     };
 
     let onCloseService = (event) =>{
@@ -159,6 +181,23 @@ export default function Service({service,servicesState,ps,fs,CheckUserClicked}) 
         setAddService(false);
     };
 
+    let onAproveService = (event) => {
+        event.preventDefault();
+        approveService(service.id);
+        service.status = 'ACTIVE';
+        fs(!ps);
+
+    };
+
+    let onDenyService = (event) => {
+        event.preventDefault();
+        denyService(service.id);
+
+
+        service.status = 'DENIED';
+        fs(!ps);
+    };
+
     let ConfirmDelete = () =>{
         return(
             <MyModal modalHeader={"Are you sure ?"} open={openDelete} handleClose={handleClose}>
@@ -192,12 +231,30 @@ export default function Service({service,servicesState,ps,fs,CheckUserClicked}) 
         <div>
         <Card key={service.id} className={classes.root}>
             <CardActionArea>
+                {admin ?
+                    <FormGroup aria-label="position" row>
+                        <Typography gutterBottom variant="h5" component="h2">
+                            {service.status}
+                        </Typography>
+                        <CardActions>
+                        <Button size="small" color="primary" onClick={event => onAproveService(event)}>
+                            Approve
+                        </Button>
+                        <Button size="small" color="primary" onClick={event => onDenyService(event)}>
+                            Deny
+                        </Button>
+                        </CardActions>
+                    </FormGroup>
+
+
+                    : null}
+
                 <CardActions>
                     {photos.length > 0 ? ServicesMedia(photos[thumb]) : null}
                 </CardActions>
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="h2">
-                        {service.name} Price: {service.price} &euro;
+                        {service.name} Price: {service.price} &euro; per {service.price_type}
                     </Typography>
                     <Typography variant="body2" color="textSecondary" component="p">
                         {service.description}
@@ -230,10 +287,14 @@ export default function Service({service,servicesState,ps,fs,CheckUserClicked}) 
                 <Button size="small" color="primary" onClick={event => onAddClick(event)}>
                     Add
                 </Button>
-
-                <Button size="small" color="primary" onClick={event => onMarkClick(event)}>
+                <Button size="small" color="primary" onClick={event => onMarkClick(event,service.id)}>
                     Mark
                 </Button>
+                    {marked ?
+                    <Button size="small" color="primary" onClick={event => onUnmarkClick(event)}>
+                        Unmark
+                    </Button>: null}
+
                 </FormGroup>
 
             </CardActions>
@@ -247,6 +308,7 @@ export default function Service({service,servicesState,ps,fs,CheckUserClicked}) 
                       onEditClick={onEditClick}
                       onCheckProviderClick={onCheckProviderClick}
                       CheckUserClicked={CheckUserClicked}
+                      onMarkClick ={onMarkClick}
         />
 
             {ConfirmDelete()}
