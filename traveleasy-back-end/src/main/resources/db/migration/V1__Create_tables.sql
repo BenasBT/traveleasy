@@ -61,6 +61,32 @@ CREATE TABLE service (
   PRIMARY KEY (id)
 );
 
+CREATE TABLE archive (
+
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    archive_id BIGINT NOT NULL,
+
+    user_id BIGINT NOT NULL REFERENCES users(id),
+    provider_id BIGINT NOT NULL REFERENCES users(id),
+
+    service_name varchar(255) NOT NULL,
+    service_description varchar(255),
+    service_price double,
+    service_price_type varchar(255) NOT NULL,
+
+    full_price double,
+
+    event_start_date date,
+    event_start_time time,
+
+    event_end_date date,
+    event_end_time time,
+
+    event_people_count integer,
+
+    PRIMARY KEY (id)
+);
+
 CREATE TABLE service_category (
   service_id BIGINT NOT NULL REFERENCES service(id),
   category_id BIGINT NOT NULL REFERENCES category(id),

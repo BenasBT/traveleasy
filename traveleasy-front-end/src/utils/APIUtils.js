@@ -227,7 +227,20 @@ export const SenddeleteEvent = async (id) =>{
     return null;
 
 };
+export const SendDeleteEvents = async () =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.delete("/scheduler/delete/",{headers});
+        console.log(res);
+        return res.data;
 
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+
+};
 export const SendEditEvent = async (editRequest) =>{
     try {
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
@@ -363,6 +376,34 @@ export const deleteCategory = async (id) =>{
     try {
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.delete("/category/" + id ,{headers});
+        console.log(res);
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+};
+
+export const sendCheckout = async (checkoutRequest) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.post("checkout/archive/",checkoutRequest ,{headers});
+        console.log(res);
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+};
+
+export const getUserArchive = async () =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("checkout/" ,{headers});
         console.log(res);
         return res.data;
 

@@ -11,6 +11,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import EditEvent from "../../../components/event/EditEvent";
 import {getScheduler, SendEditEvent} from "../../../utils/APIUtils";
+import Button from "@material-ui/core/Button";
+import FormGroup from "@material-ui/core/FormGroup";
+import Checkout from "../../../components/checkout/Checkout";
 
 
 const useStyles = makeStyles(theme => ({
@@ -21,10 +24,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 // TODO: Pakeisti i kortas
-export default function CartDrawer ({open,handleClose,events,deleteEvent,editEvent}) {
+export default function CartDrawer ({open,handleClose,events,deleteEvent,editEvent,deleteEvents}) {
 
     const [selectedEvent, setSelectedEvent] = useState({});
     const [openEditEvent, setOpenEditEvent] = useState(false);
+    const [checkoutOpen, setCheckoutOpen] = useState(false);
 
     const classes = useStyles();
     const sideList =
@@ -69,6 +73,14 @@ export default function CartDrawer ({open,handleClose,events,deleteEvent,editEve
         setOpenEditEvent(true);
 
     };
+    let openCheckout = (e) => {
+
+        setCheckoutOpen(true);
+    };
+
+    let closeCheckout = (e) =>{
+        setCheckoutOpen(false)
+    };
 
 
     return(
@@ -76,7 +88,19 @@ export default function CartDrawer ({open,handleClose,events,deleteEvent,editEve
 
             <Drawer anchor='right' open={open} onClose={handleClose}>
                 {sideList}
+
+                <Button color="primary"
+                        variant="contained"
+                        onClick={openCheckout}
+                >Checkout</Button>
             </Drawer>
+
+
+
+            <Checkout events={events}
+                      open={checkoutOpen}
+                      handleClose={closeCheckout}
+                      deleteEvents={deleteEvents}/>
 
             <EditEvent event={selectedEvent} open={openEditEvent}
                        handleClose={closeEventEdit}

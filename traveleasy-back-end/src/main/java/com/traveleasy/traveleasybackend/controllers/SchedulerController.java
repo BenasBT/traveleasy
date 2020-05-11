@@ -44,7 +44,7 @@ public class SchedulerController {
 
     @GetMapping("/")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public List<EventEntity> getMyServices(@CurrentUser UserPrincipal userPrincipal) {
+    public List<EventEntity> getMyEvents(@CurrentUser UserPrincipal userPrincipal) {
 
         return eventRepository.findAllByUser(userRepository.findById(userPrincipal.getId())
         .orElseThrow(()->new RuntimeException("User not found")));
@@ -53,7 +53,7 @@ public class SchedulerController {
 
     @GetMapping("{id}")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public EventEntity getMyServices(@CurrentUser UserPrincipal userPrincipal,
+    public EventEntity getMyEventss(@CurrentUser UserPrincipal userPrincipal,
                                            @PathVariable("id") Long id) {
 
         return eventRepository.findById(id)
@@ -141,6 +141,21 @@ public class SchedulerController {
 
         eventRepository.delete(
                 eventRepository.findById(id).orElseThrow(() -> new RuntimeException("event not found"))
+        );
+
+        return new ResponseEntity<>("Event Added " , HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/delete/" )
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> deleteServiceEvent(@CurrentUser UserPrincipal userPrincipal){
+
+        eventRepository.deleteAll(
+                eventRepository.findAllByUser(
+                        userRepository.findById(userPrincipal.getId()).orElseThrow(
+                                () -> new RuntimeException("user not found")
+                        )
+                )
         );
 
         return new ResponseEntity<>("Event Added " , HttpStatus.OK);

@@ -45,7 +45,6 @@ export default function MarkedServices() {
     let {id} = useParams();
 
     let mapServices = () =>{
-        console.log(services);
         if(services){
             return services.map(
                 (ser) => (
@@ -68,7 +67,6 @@ export default function MarkedServices() {
     let mappedServices;
     useEffect(() => {
         getMarkedService(id).then(r => {
-            console.log(r);
             setServices(r);
         })
 

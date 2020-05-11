@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import DropZone from "../../components/dropzone/DropZone";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -10,9 +10,11 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
-import {getAllCategories,
-        addServiceFiles,
-        getPriceTypes} from '../../utils/APIUtils'
+import {
+    getAllCategories,
+    addServiceFiles,
+    getPriceTypes, getCurrentUser
+} from '../../utils/APIUtils'
 import {useHistory} from "react-router-dom";
 
 import InputLabel from '@material-ui/core/InputLabel';
@@ -49,6 +51,7 @@ export default function AddService() {
     const [priceTypes, setPriceTypes] = useState(null);
 
     const history = useHistory();
+    const dispatch = useDispatch();
 
     const useStyles = makeStyles((theme) => ({
         root: {
@@ -117,7 +120,9 @@ export default function AddService() {
         console.log(addRequest);
         formData.set('data',JSON.stringify(addRequest));
 
-        addServiceFiles(formData).then();
+        addServiceFiles(formData).then(
+            ()=> getCurrentUser(dispatch).then()
+        );
 
 
         // addService(addRequest).then(

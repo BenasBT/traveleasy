@@ -111,8 +111,7 @@ export default function AddService({open,handleClose,service}) {
 
         const inputId = event.target.id;
         const inputValue = event.target.value;
-console.log(inputId);
-console.log(inputValue);
+
         switch(inputId) {
 
             case 'Description':
@@ -161,7 +160,7 @@ console.log(inputValue);
                         {service.description}
                     </Typography>
                     <Typography gutterBottom variant="h5" component="h2">
-                        Price: {service.price} &euro;
+                        Price: {service.price} &euro; per {service.price_type}
                     </Typography>
 
 
@@ -184,6 +183,7 @@ console.log(inputValue);
 
 
                         <TextField id="pplCnt"
+                                   type={"number"}
                                    label="People count"
                                    value={service.pplCnt}
                                    onChange={(event) => onChange(event)}

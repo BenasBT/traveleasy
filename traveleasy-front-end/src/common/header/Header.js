@@ -18,7 +18,7 @@ import UserDrawer from "../drawers/user/UserDrawer";
 import {useDispatch, useSelector} from "react-redux";
 import EventIcon from '@material-ui/icons/Event';
 import CalendarViewDayIcon from '@material-ui/icons/CalendarViewDay';
-import {SenddeleteEvent, getScheduler, SendEditEvent} from "../../utils/APIUtils";
+import {SenddeleteEvent, getScheduler, SendEditEvent,SendDeleteEvents} from "../../utils/APIUtils";
 import Filter from "../drawers/filter/Filter";
 import SearchIcon from '@material-ui/icons/Search';
 import {setCalendarAction} from "../../redux/actions";
@@ -48,7 +48,7 @@ export default function Header(){
 
     const [openLogin, setOpenLogin] = useState(false);
 
-    const [events, setEvents] = useState(false);
+    const [events, setEvents] = useState([]);
 
     const currentUser = useSelector(state => state.currentUserReducer);
     const dispatch = useDispatch();
@@ -116,6 +116,22 @@ export default function Header(){
         // lets api = calendarRef.current.getApi();
     };
 
+    let deleteEvents = (e) =>{
+        e.preventDefault();
+
+
+        SendDeleteEvents().then( () =>{
+            //REDUX
+            getScheduler().then((events) => {
+                setEvents([]);
+                fullCalendar(parseEvents(events));
+            });
+
+        });
+        // lets api = calendarRef.current.getApi();
+    };
+
+
     let parseEvents = (events) =>{
 
         let mapped_events;
@@ -154,46 +170,48 @@ export default function Header(){
 
     let fullCalendar = (events) => {
         //REDUX
-        dispatch(setCalendarAction(
-            <FullCalendar defaultView="dayGridMonth" plugins={[ dayGridPlugin ]}
-                          events={events} eventClick={calendar.props.eventClick}
-            />));
+        if (typeof calendar.props !== "undefined") {
+            dispatch(setCalendarAction(
+                <FullCalendar defaultView="dayGridMonth" plugins={[dayGridPlugin]}
+                              events={events} eventClick={calendar.props.eventClick}
+                />));
+        }
     };
 
-    let SubmitEditEvent = (e,event,fixedDate,sDate,sTime,eDate,eTime,pplCnt) =>{
+    let SubmitEditEvent = (e,event) =>{
         e.preventDefault();
         const editRequest = {
 
             id:event.id,
             service:event.service,
 
-            fixed_date:fixedDate,
-            start_date: sDate,
-            start_time:sTime,
+            fixed_date:event.fixed_date,
+            start_date: event.start_date,
+            start_time:event.start_time,
 
-            end_date:eDate,
-            end_time:eTime,
+            end_date:event.end_date,
+            end_time:event.end_time,
 
-            people_count: pplCnt
+            people_count: event.people_count
         };
 
 
-        if(pplCnt === ''){
+        if(editRequest.people_count === ''){
             editRequest.people_count =0;
         }
-        if(sTime === null){
+        if(editRequest.start_date === null){
             editRequest.start_date = "";
         }
-        if(sDate === null){
-            editRequest.start_date = "";
+        if(editRequest.start_time === null){
+            editRequest.start_time = "";
         }
-        if(eDate === null){
+        if(editRequest.end_date === null){
             editRequest.end_date = "";
         }
-        if(eTime === null){
+        if(editRequest.end_time === null){
             editRequest.end_time = "";
         }
-        if(fixedDate){
+        if(event.fixed_date){
             editRequest.end_date = "";
             editRequest.end_time = "";
         }
@@ -283,7 +301,7 @@ export default function Header(){
 
             <CartDrawer open={openCart} handleClose={onCartClick}
                         events={events}
-                        deleteEvent={deleteEvent} editEvent={SubmitEditEvent}/>
+                        deleteEvent={deleteEvent} editEvent={SubmitEditEvent} deleteEvents={deleteEvents}/>
 
             <UserDrawer open={openUser} handleClose={onProfileClick}/>
         </div>

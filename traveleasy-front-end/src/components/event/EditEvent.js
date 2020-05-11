@@ -99,7 +99,7 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
 
             case 'fixedDate':
 
-                break
+                break;
 
             case 'sTime':
                 event.start_time = inputValue;

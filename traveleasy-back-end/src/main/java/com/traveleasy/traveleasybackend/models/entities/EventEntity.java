@@ -18,7 +18,6 @@ public class EventEntity extends AbstractEntity {
     public EventEntity(){}
 
     @ManyToOne(targetEntity=UserEntity.class,cascade=CascadeType.REFRESH)
-    @JsonIgnore
     private UserEntity user;
 
     @ManyToOne(targetEntity=ServiceEntity.class,cascade=CascadeType.REFRESH)
