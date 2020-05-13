@@ -20,12 +20,14 @@ public class EventEntity extends AbstractEntity {
     @ManyToOne(targetEntity=UserEntity.class,cascade=CascadeType.REFRESH)
     private UserEntity user;
 
+    @ManyToOne(targetEntity=UserEntity.class,cascade=CascadeType.REFRESH)
+    private UserEntity provider;
+
     @ManyToOne(targetEntity=ServiceEntity.class,cascade=CascadeType.REFRESH)
     private ServiceEntity service;
 
     @Column(name = "fixed_date")
     private boolean fixed_date;
-
 
     @JsonFormat(pattern="HH:mm")
     @Column(name = "start_time", columnDefinition="TIME")
@@ -43,9 +45,15 @@ public class EventEntity extends AbstractEntity {
     @Column(name = "end_date", columnDefinition="DATE")
     private Date end_date;
 
-
     @Column(name = "people_count")
     private int people_count;
+
+    @Column(name = "price_counter")
+    private double price_counter;
+
+    @Column(name = "price")
+    private double price;
+
 
 //{service={id=1,
 //        user={id=1,

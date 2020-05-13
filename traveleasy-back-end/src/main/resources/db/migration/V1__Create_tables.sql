@@ -71,9 +71,10 @@ CREATE TABLE archive (
 
     service_name varchar(255) NOT NULL,
     service_description varchar(255),
+
     service_price double,
     service_price_type varchar(255) NOT NULL,
-
+    event_price double,
     full_price double,
 
     event_start_date date,
@@ -96,7 +97,9 @@ CREATE TABLE service_category (
 CREATE TABLE event (
     id BIGINT NOT NULL AUTO_INCREMENT,
     service_id BIGINT NOT NULL REFERENCES service(id),
-    user_id BIGINT NOT NULL REFERENCES category(id),
+    user_id BIGINT NOT NULL REFERENCES users(id),
+    provider_id BIGINT NOT NULL REFERENCES users(id),
+
     fixed_date bool,
     start_time time,
     end_time time,
@@ -104,6 +107,9 @@ CREATE TABLE event (
     start_date date,
     end_date date,
     people_count integer,
+
+    price_counter double,
+    price double,
     PRIMARY KEY (id)
 );
 
