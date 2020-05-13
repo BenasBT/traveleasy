@@ -35,8 +35,17 @@ export default function Scheduler() {
         let mapped_events;
         if(typeof events[0] !== 'undefined') {
             if (typeof events[0].service !== 'undefined') {
-                mapped_events = events.map((event) => (
-                    {
+                console.log("Calendar map 1 ");
+                mapped_events = events.map((event) => {
+
+                    if(event.end_time == null){
+                        event.end_time = "24:00:00"
+                    }
+                    if(event.start_time == null){
+                        event.start_time = "00:00:00"
+                    }
+
+                    return({
                         title: event.service.name,
                         start: event.start_date + 'T' + event.start_time,
                         end: event.end_date + 'T' + event.end_time,
@@ -45,8 +54,10 @@ export default function Scheduler() {
                             event: event
                         },
                         description: event.service.description
-                    }))
+                    })
+                });
             } else {
+                console.log("Calendar map 2");
                 mapped_events = events.map((event) => (
                     {
                         title: event.title,
@@ -114,12 +125,17 @@ export default function Scheduler() {
             end_date:event.end_date,
             end_time:event.end_time,
 
-            people_count: event.people_count
+            people_count: event.people_count,
+            price_counter: event.price_counter
+
         };
 
 
         if(event.people_count === ''){
             editRequest.people_count =0;
+        }
+        if(editRequest.price_counter === ""){
+            editRequest.price_counter =0;
         }
         if(event.start_time === null){
             editRequest.start_date = "";

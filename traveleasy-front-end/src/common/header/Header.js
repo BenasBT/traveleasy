@@ -192,12 +192,16 @@ export default function Header(){
             end_date:event.end_date,
             end_time:event.end_time,
 
-            people_count: event.people_count
+            people_count: event.people_count,
+            price_counter: event.price_counter
         };
 
 
         if(editRequest.people_count === ''){
             editRequest.people_count =0;
+        }
+        if(editRequest.price_counter === ""){
+            editRequest.price_counter =0;
         }
         if(editRequest.start_date === null){
             editRequest.start_date = "";

@@ -38,6 +38,17 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
     const [eTime, setEtime] = useState("17:30");
     const [eDate, setEDate] = useState("");
 
+    const [pplCntCorrect, setPplCntCorrect] = useState({status:false,message:""});
+
+    const [sTimeCorrect, setSTimeCorrect] = useState({status:false,message:""});
+    const [eTimeCorrect, setETimeCorrect] = useState({status:false,message:""});
+
+    const [sDateCorrect, setSDateCorrect] = useState({status:false,message:""});
+    const [eDateCorrect, setEDateCorrect] = useState({status:false,message:""});
+
+    const [priceCounter, setPriceCounter] = useState("");
+
+
     const [state,forceStateUpdate] = useState(false);
 
     const classes = useStyles();
@@ -81,11 +92,44 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
     };
 
 
+    //servicetime > inputtime false
+    let isLaterTime = (serviceTime,inputTime) =>{
+        // if(serviceTime === "00:00"){
+        //     serviceTime = "24:00"
+        // }
+        // if(inputTime === "00:00"){
+        //     inputTime = "24:00"
+        // }
+
+        let serviceTimeParts = serviceTime.split(":");
+        let inputTimeParts = inputTime.split(":");
+        if (serviceTimeParts[0] < inputTimeParts[0]) {
+            // console.log("Hours");
+            // console.log(serviceTimeParts[0])
+            // console.log(inputTimeParts[0])
+            return false;
+        }else if(serviceTimeParts[0] === inputTimeParts[0]){
+            if(serviceTimeParts[1] < inputTimeParts[1]){
+                // console.log("Minutes");
+                // console.log(serviceTimeParts[1])
+                // console.log(inputTimeParts[1])
+                return false
+            }
+        }
+        console.log("true");
+        return true
+
+    };
 
     let onChange = (e) => {
 
         const inputId = e.target.id;
         const inputValue = e.target.value;
+
+        let serviceStartDate = new Date(event.service.start_date);
+        let serviceEndDate = new Date(event.service.end_date);
+        let inputDate;
+
         switch(inputId) {
 
             case 'Description':
@@ -93,6 +137,25 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
                 break;
 
             case 'pplCnt':
+
+                if(event.service.max_people_count !== 0 && inputValue > event.service.max_people_count){
+                    setPplCntCorrect({
+                        status:true,
+                        message:`Maximum people count is ${event.service.max_people_count}`
+                    });
+                }else if(event.service.min_people_count !== 0 && inputValue < event.service.min_people_count){
+                    setPplCntCorrect({
+                        status:true,
+                        message:`Minimum people count is ${event.service.min_people_count}`
+                    });
+                }else {
+                    setPplCntCorrect({
+                        status:false,
+                        message:""
+                    });
+
+                }
+
                 event.people_count = inputValue;
                 forceStateUpdate(!state);
                 break;
@@ -102,34 +165,233 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
                 break;
 
             case 'sTime':
+
+                if(event.service.end_time !== null && event.service.start_time !== null) {
+                    if (!isLaterTime(inputValue, event.service.start_time)) {
+                        setSTimeCorrect({
+                            status: true,
+                            message: `Service Starts at ${event.service.start_time}`
+                        });
+                    } else if (!isLaterTime(event.service.end_time, inputValue)) {
+                        setSTimeCorrect({
+                            status: true,
+                            message: `Service Ends at ${event.service.end_time}`
+                        });
+                    } else {
+                        setSTimeCorrect({
+                            status: false,
+                            message: ""
+                        });
+
+                    }
+                }
+
                 event.start_time = inputValue;
                 forceStateUpdate(!state);
                 break;
 
             case 'sDate':
+
+                inputDate = new Date(inputValue);
+
+                if(inputValue !== ""
+                    && serviceStartDate.getTime() !== 0
+                    && inputDate.getTime() < serviceStartDate.getTime()){
+
+                    setSDateCorrect({
+                        status: true,
+                        message: `Service Starts at ${event.service.start_date}`
+                    });
+
+                }else if(inputValue !== ""
+                    && serviceEndDate.getTime() !== 0
+                    && inputDate.getTime() > serviceEndDate.getTime()){
+
+                    setSDateCorrect({
+                        status: true,
+                        message: `Service Ends at ${event.service.end_date}`
+                    });
+
+                } else if(!event.fixed_date
+                    && inputValue !== ""
+                    && new Date(event.end_date).getTime() !== 0
+                    && inputDate.getTime() > new Date(event.end_date).getTime() ){
+                    setSDateCorrect({
+                        status: true,
+                        message: `Event Start date can't be bigger than End date`
+                    });
+
+                    setEDateCorrect({
+                        status: true,
+                        message: `Event End date can't be smaller than Start date`
+                    });
+
+                }else if(!event.fixed_date
+                    && inputValue !== ""
+                    && new Date(event.end_date).getTime() !== 0
+                    && inputDate.getTime() === new Date(event.end_date).getTime() ){
+
+                    setSDateCorrect({
+                        status: true,
+                        message: `Non fixed event's dates can't match`
+                    });
+
+                    setEDateCorrect({
+                        status: true,
+                        message: `Non fixed event's dates can't match`
+                    });
+                }
+                else {
+                    setSDateCorrect({
+                        status: false,
+                        message: ""
+                    });
+                    setEDateCorrect({
+                        status: false,
+                        message: ""
+                    });
+                }
                 event.start_date = inputValue;
                 forceStateUpdate(!state);
                 break;
 
             case 'eTime':
+                console.log(inputValue);
+                if(event.service.end_time !== null && event.service.start_time !== null){
+                    if(!isLaterTime(event.service.end_time,inputValue)){
+
+                        setETimeCorrect({
+                            status:true,
+                            message:`Service Ends at ${event.service.end_time}`
+                        });
+                    }
+                    else if(!isLaterTime(inputValue,event.service.start_time)){
+
+                        setETimeCorrect({
+                            status:true,
+                            message:`Service starts at ${event.service.start_time}`
+                        });
+                    }
+                    else {
+                        setETimeCorrect({
+                            status:false,
+                            message:""
+                        });
+
+                    }
+                }
                 event.end_time = inputValue;
                 forceStateUpdate(!state);
                 break;
 
             case 'eDate':
+
+                inputDate = new Date(inputValue);
+
+
+                if(inputValue !== ""
+                    && serviceStartDate.getTime() !== 0
+                    && inputDate.getTime() < serviceStartDate.getTime()){
+
+                    setEDateCorrect({
+                        status: true,
+                        message: `Service Starts at ${event.service.start_date}`
+                    });
+
+                }else if(inputValue !== ""
+                    && serviceEndDate.getTime() !== 0
+                    && inputDate.getTime() > serviceEndDate.getTime()){
+
+                    setEDateCorrect({
+                        status: true,
+                        message: `Service Ends at ${event.service.end_date}`
+                    });
+
+                }
+                else if(
+                    !event.fixed_date
+                    && inputValue !== ""
+                    && new Date(event.start_date).getTime() !== 0
+                    && inputDate.getTime() < new Date(event.start_date).getTime() ){
+                    setEDateCorrect({
+                        status: true,
+                        message: `Event End date can't be smaller than Start date`
+                    });
+
+                    setSDateCorrect({
+                        status: true,
+                        message: `Event Start date can't be bigger than End date`
+                    });
+
+                }else if(!event.fixed_date
+                    && inputValue !== ""
+                    && new Date(event.start_date).getTime() !== 0
+                    && inputDate.getTime() === new Date(event.start_date).getTime() ){
+
+                    console.log("hit");
+
+                    setEDateCorrect({
+                        status: true,
+                        message: `Non fixed event's dates can't match`
+                    });
+
+                    setSDateCorrect({
+                        status: true,
+                        message: `Non fixed event's dates can't match`
+                    });
+                }else {
+                    setEDateCorrect({
+                        status: false,
+                        message: ""
+                    });
+                    setSDateCorrect({
+                        status: false,
+                        message: ""
+                    });
+                }
+
                 event.end_date = inputValue;
+                forceStateUpdate(!state);
+                break;
+
+            case 'priceCounter':
+                event.price_counter = inputValue;
                 forceStateUpdate(!state);
                 break;
 
             default:
                 break;
+
+
         }
+
     };
 
     let handleCloseAndClearChecks = () =>{
         setIsDataSet(false);
         setFixedDateCheck(false);
         handleClose();
+    };
+
+    let checkErrors = () =>{
+
+        if(pplCntCorrect.status){
+            return true;
+        }
+        else if(sTimeCorrect.status){
+            return true;
+        }
+        else if(eTimeCorrect.status){
+            return true;
+        }
+        else if(sDateCorrect.status){
+            return true;
+        }
+        else if(eDateCorrect.status){
+            return true;
+        }else {
+            return false
+        }
     };
 
     let checkEvent = () =>{
@@ -163,6 +425,24 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
                             {categories()}
                         </FormGroup>
 
+                        {event.service.price_type === "KM" ?
+                            <TextField id="priceCounter"
+                                       type={"number"}
+                                       label="Kilometer Count"
+                                       value={event.priceCounter}
+                                       onChange={(event) => onChange(event)}
+                            />
+                            : null}
+
+                        {event.service.price_type === "UNIT" ?
+                            <TextField id="priceCounter"
+                                       type={"number"}
+                                       label="Unit Count"
+                                       value={event.priceCounter}
+                                       onChange={(event) => onChange(event)}
+                            />
+                            : null}
+
                         <br/>
 
 
@@ -178,6 +458,8 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
 
 
                         <TextField id="pplCnt"
+                                   error={pplCntCorrect.status}
+                                   helperText={pplCntCorrect.message}
                                    label="People count"
                                    value={event.people_count}
                                    onChange={(event) => onChange(event)}
@@ -189,6 +471,8 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
 
                                 <TextField
                                     id="sDate"
+                                    error={sDateCorrect.status}
+                                    helperText={sDateCorrect.message}
                                     label="Start Date"
                                     value={event.start_date}
                                     onChange={(event) => onChange(event)}
@@ -200,6 +484,8 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
                                 />
 
                                 <TextField id="sTime"
+                                           error={sTimeCorrect.status}
+                                           helperText={sTimeCorrect.message}
                                            label="Start Time"
                                            value={event.start_time}
                                            onChange={(event) => onChange(event)}
@@ -220,6 +506,8 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
                             <FormGroup aria-label="position" row>
                                 <TextField
                                     id="eDate"
+                                    error={eDateCorrect.status}
+                                    helperText={eDateCorrect.message}
                                     label="End Date"
                                     value={event.end_date}
                                     onChange={(event) => onChange(event)}
@@ -231,6 +519,8 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
                                 />
 
                                 <TextField id="eTime"
+                                           error={eTimeCorrect.status}
+                                           helperText={eTimeCorrect.message}
                                            label="End Time"
                                            value={event.end_time}
                                            onChange={(event) => onChange(event)}
@@ -250,6 +540,8 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
                             <FormGroup aria-label="position" row>
                                 <TextField
                                     id="sDate"
+                                    error={sDateCorrect.status}
+                                    helperText={sDateCorrect.message}
                                     label="Date"
                                     value={event.start_date}
                                     onChange={(event) => onChange(event)}
@@ -261,6 +553,8 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
                                 />
 
                                 <TextField id="sTime"
+                                           error={setSTimeCorrect.status}
+                                           helperText={sTimeCorrect.message}
                                            label="Time"
                                            value={event.start_time}
                                            onChange={(event) => onChange(event)}
@@ -281,7 +575,8 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
                         <br/>
 
                         <CardActions>
-                            <Button color="primary"
+                            <Button disabled={checkErrors()}
+                                    color="primary"
                                     variant="contained"
                                     onClick={e => editEvent(e,event)}
                             >Submit</Button>

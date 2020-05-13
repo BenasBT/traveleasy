@@ -5,7 +5,7 @@ import {isAdmin} from  '../../utils/Utils'
 
 import {makeStyles,useTheme} from "@material-ui/core/styles";
 import {useSelector} from "react-redux";
-import {useHistory, useLocation} from "react-router-dom";
+import {useHistory, useLocation, useParams} from "react-router-dom";
 import ServiceData from "../../pages/service/ServiceData";
 import {deleteService,
         markService,
@@ -90,12 +90,14 @@ export default function Service({service,servicesState,ps,fs,CheckUserClicked,ma
                 />
             )
     };
-
+    // let {id} = useParams();
+    // let location= useLocation();
     let onEditClick = (event) =>{
         event.preventDefault();
-        history.push("service/edit/" + service.id);
+
+        history.push("/service/edit/" + service.id);
     };
-    let location= useLocation();
+
 
 
 

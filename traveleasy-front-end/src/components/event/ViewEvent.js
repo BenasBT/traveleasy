@@ -203,6 +203,11 @@ export default function ViewEvent({open,handleClose,event,currentUser,onEditClic
     }
     let provider = event.service.user;
 
+    let calculateFullPrice = () =>{
+        console.log();
+
+        return 0
+    };
 
     return(
         <MyModal modalHeader={event.service.name} open={open} handleClose={handleClose}>
@@ -222,6 +227,9 @@ export default function ViewEvent({open,handleClose,event,currentUser,onEditClic
                     <Divider   />
                     <Typography gutterBottom variant="body2" component="h2">
                         Price: {event.service.price} &euro; per {event.service.price_type}
+                    </Typography>
+                    <Typography gutterBottom variant="body2" component="h2">
+                        Full Price: {event.price} &euro;
                     </Typography>
                     <Divider   />
                     Categories:

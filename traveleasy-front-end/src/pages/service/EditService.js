@@ -149,6 +149,12 @@ export default function EditService() {
         if(addRequest.end_date == null){
             addRequest.end_date = "";
         }
+        if(addRequest.start_time == null){
+            addRequest.start_time = "";
+        }
+        if(addRequest.end_time == null){
+            addRequest.end_time = "";
+        }
 
         console.log(addRequest);
 
