@@ -22,6 +22,7 @@ import {getAllCategories, getPriceTypes} from "../../../utils/APIUtils";
 import MenuItem from "@material-ui/core/MenuItem";
 import {useDispatch, useSelector} from "react-redux";
 import {setFilter} from '../../../redux/actions/index'
+import swal from "sweetalert";
 
 const drawerWidth = 240;
 
@@ -90,6 +91,17 @@ export default function Filter({open, handleClose,updateServices}) {
     const [categories, setCategories] = useState([]);
     const [state, forceStateUpdate] = useState(false);
 
+    const [sTimeCorrect, setSTimeCorrect] = useState({status:false,message:""});
+    const [eTimeCorrect, setETimeCorrect] = useState({status:false,message:""});
+
+    const [sDateCorrect, setSDateCorrect] = useState({status:false,message:""});
+    const [eDateCorrect, setEDateCorrect] = useState({status:false,message:""});
+
+    const [minPplCntCorrect, setMinPplCntCorrect] = useState({status:false,message:""});
+    const [maxPplCntCorrect, setMaxPplCntCorrect] = useState({status:false,message:""});
+
+    const [minPriceCorrect, setMinPriceCorrect] = useState({status:false,message:""});
+    const [maxPriceCorrect, setMaxPriceCorrect] = useState({status:false,message:""});
 
     const filter = useSelector(state => state.filterReducer);
 
@@ -103,40 +115,289 @@ export default function Filter({open, handleClose,updateServices}) {
         switch (inputId) {
 
             case 'minPrice':
+                if(maxPrice !== "" && inputValue > maxPrice){
+                    setMinPriceCorrect({
+                        status:true,
+                        message:`Min price too big`
+                    });
+                }else {
+                    setMinPriceCorrect({
+                        status:false,
+                        message:""
+                    });
+                    setMaxPriceCorrect({
+                        status:false,
+                        message:""
+                    });
+
+                }
                 setMinPrice(inputValue);
                 break;
 
             case 'maxPrice':
+                if(minPrice !== "" && inputValue < minPrice){
+                    setMaxPriceCorrect({
+                        status:true,
+                        message:`Max price too small`
+                    });
+                }else {
+                    setMaxPriceCorrect({
+                        status:false,
+                        message:""
+                    });
+                    setMinPriceCorrect({
+                        status:false,
+                        message:""
+                    });
+
+                }
                 setMaxPrice(inputValue);
                 break;
 
             case 'minPplCnt':
+                if(maxPplCnt !== "" && inputValue > maxPplCnt){
+                    setMinPplCntCorrect({
+                        status:true,
+                        message:`has to be smaller`
+                    });
+                }else {
+                    setMinPplCntCorrect({
+                        status:false,
+                        message:""
+                    });
+                    setMaxPplCntCorrect({
+                        status:false,
+                        message:""
+                    });
+
+                }
                 setMinPplCnt(inputValue);
                 break;
 
             case 'maxPplCnt':
+                if(minPplCnt !== "" && inputValue < minPplCnt){
+                    setMaxPplCntCorrect({
+                        status:true,
+                        message:`has to be bigger`
+                    });
+                }else {
+                    setMaxPplCntCorrect({
+                        status:false,
+                        message:""
+                    });
+                    setMinPplCntCorrect({
+                        status:false,
+                        message:""
+                    });
+
+                }
                 setMaxPplCnt(inputValue);
                 break;
 
             case 'sTime':
+                if(eTime !== "" && typeof inputValue !== 'undefined' ){
+                    let inputParts = inputValue.split(":");
+                    let eTimeParts = eTime.split(":");
+                    if (inputParts[0] > eTimeParts[0]) {
+                        setSTimeCorrect({
+                            status:true,
+                            message:`Start time has to be smaller`
+                        });
+                    }else if(inputParts[0] === eTimeParts[0]){
+                        if(inputParts[1] > eTimeParts[1]){
+                            setSTimeCorrect({
+                                status:true,
+                                message:`Start time has to be smaller`
+                            });
+                        }else {
+                            setETimeCorrect({
+                                status:false,
+                                message:""
+                            });
+                            setSTimeCorrect({
+                                status: false,
+                                message: ``
+                            });
+                        }
+                    }else {
+                        setETimeCorrect({
+                            status:false,
+                            message:""
+                        });
+                        setSTimeCorrect({
+                            status: false,
+                            message: ``
+                        });
+                    }
+                }else {
+                    setETimeCorrect({
+                        status:false,
+                        message:""
+                    });
+                    setSTimeCorrect({
+                        status: false,
+                        message: ``
+                    });
+
+                }
                 setStime(inputValue);
                 break;
 
             case 'sDate':
+
+                if(eDate !== ""){
+                    let inputDate = new Date(inputValue);
+                    let enddate = new Date(eDate);
+                    if(enddate.getTime() !== 0
+                    && inputDate.getTime() > enddate.getTime()){
+                        setSDateCorrect({
+                            status:true,
+                            message:"Start has to be earlier"
+                        });
+                    }else {
+                        setEDateCorrect({
+                            status:false,
+                            message:""
+                        });
+                        setSDateCorrect({
+                            status: false,
+                            message: ``
+                        });
+                    }
+                }else
+                 {
+                     setSDateCorrect({
+                         status:false,
+                         message:""
+                     });
+                     setEDateCorrect({
+                         status: false,
+                         message: ``
+                     });
+                }
                 setSDate(inputValue);
                 break;
 
             case 'eTime':
+                if(sTime !== "" && typeof inputValue !== 'undefined') {
+                    let inputParts = inputValue.split(":");
+                    let eTimeParts = sTime.split(":");
+                    if (inputParts[0] < eTimeParts[0]) {
+                        setETimeCorrect({
+                            status: true,
+                            message: `End time has to be bigger`
+                        });
+                    } else if (inputParts[0] === eTimeParts[0]) {
+                        if (inputParts[1] < eTimeParts[1]) {
+                            setETimeCorrect({
+                                status: true,
+                                message: `End time has to be bigger`
+                            });
+                        }else {
+                            setETimeCorrect({
+                                status:false,
+                                message:""
+                            });
+                            setSTimeCorrect({
+                                status: false,
+                                message: ``
+                            });
+                        }
+                    }else{
+                        setETimeCorrect({
+                            status: false,
+                            message: ``
+                        });
+                        setSTimeCorrect({
+                            status:false,
+                            message:""
+                        });
+                    }
+                }else {
+                    setETimeCorrect({
+                        status:false,
+                        message:""
+                    });
+                    setSTimeCorrect({
+                        status: false,
+                        message: ``
+                    });
+                }
+
                 setEtime(inputValue);
                 break;
 
             case 'eDate':
+                if(eDate !== ""){
+                    let inputDate = new Date(inputValue);
+                    let enddate = new Date(eDate);
+                    if(enddate.getTime() !== 0
+                        && inputDate.getTime() < enddate.getTime()){
+                        setEDateCorrect({
+                            status:true,
+                            message:"End has to be later"
+                        });
+                    }else {
+                        setEDateCorrect({
+                            status:false,
+                            message:""
+                        });
+                        setSDateCorrect({
+                            status: false,
+                            message: ``
+                        });
+                    }
+                }else
+                {
+                    setEDateCorrect({
+                        status:false,
+                        message:""
+                    });
+                    setSDateCorrect({
+                        status: false,
+                        message: ``
+                    });
+                }
+
                 setEDate(inputValue);
                 break;
 
             default:
                 break;
         }
+
+    };
+
+    let checkErrors = () =>{
+        if(minPplCntCorrect.status){
+            return true;
+        }
+        else if(maxPplCntCorrect.status){
+            return true;
+        }
+        else if(minPriceCorrect.status){
+            return true;
+        }
+        else if(maxPriceCorrect.status){
+            return true;
+        }
+        else if(sDateCorrect.status){
+            return true;
+        }
+        else if(eDateCorrect.status){
+            return true;
+        }
+        else if(sTimeCorrect.status){
+            return true;
+        }
+        else if(eTimeCorrect.status){
+            return true;
+        }else {
+
+            return false;
+        }
+
+
 
     };
 
@@ -193,17 +454,20 @@ export default function Filter({open, handleClose,updateServices}) {
         //update Services
         updateServices(event);
         dispatch(setFilter(filter));
+        swal ("Ok","Filter added" ,  "success" );
     };
 
     useEffect(() => {
 
         getAllCategories().then(
             (r) => {
-                setCategories(r.filter(cat => cat.valid).map( cat => ({
-                    id:cat.id,
-                    name:cat.name,
-                    checked:true
-                })));
+                if(r !== null) {
+                    setCategories(r.filter(cat => cat.valid).map(cat => ({
+                        id: cat.id,
+                        name: cat.name,
+                        checked: true
+                    })));
+
 
         dispatch(setFilter(
             {
@@ -226,7 +490,7 @@ export default function Filter({open, handleClose,updateServices}) {
                 end_time: "",
             }
         ));
-
+                }
         });
     }, []);
 
@@ -250,12 +514,18 @@ export default function Filter({open, handleClose,updateServices}) {
                     <Divider/>
                     <TextField id="minPrice"
                                label="Min"
+                               type={"number"}
+                               error={minPriceCorrect.status}
+                               helperText={minPriceCorrect.message}
                                value={minPrice}
                                onChange={(event) => onChange(event)}
                     />
 
                     <TextField id="maxPrice"
                                label="Max"
+                               type={"number"}
+                               error={maxPriceCorrect.status}
+                               helperText={maxPriceCorrect.message}
                                value={maxPrice}
                                onChange={(event) => onChange(event)}
                     />
@@ -276,12 +546,18 @@ export default function Filter({open, handleClose,updateServices}) {
                     <Divider/>
                     <TextField id="minPplCnt"
                                label="Min"
+                               type={"number"}
+                               error={minPplCntCorrect.status}
+                               helperText={minPplCntCorrect.message}
                                value={minPplCnt}
                                onChange={(event) => onChange(event)}
                     />
 
                     <TextField id="maxPplCnt"
                                label="Max"
+                               type={"number"}
+                               error={maxPplCntCorrect.status}
+                               helperText={maxPplCntCorrect.message}
                                value={maxPplCnt}
                                onChange={(event) => onChange(event)}
                     />
@@ -293,6 +569,8 @@ export default function Filter({open, handleClose,updateServices}) {
                         <TextField
                             id="sDate"
                             label="Start Date"
+                            error={sDateCorrect.status}
+                            helperText={sDateCorrect.message}
                             value={sDate}
                             onChange={(event) => onChange(event)}
                             type="date"
@@ -304,6 +582,8 @@ export default function Filter({open, handleClose,updateServices}) {
 
                         <TextField id="sTime"
                                    label="Start Time"
+                                   error={sTimeCorrect.status}
+                                   helperText={sTimeCorrect.message}
                                    value={sTime}
                                    onChange={(event) => onChange(event)}
                                    type="time"
@@ -325,6 +605,8 @@ export default function Filter({open, handleClose,updateServices}) {
                         <TextField
                             id="eDate"
                             label="End Date"
+                            error={eDateCorrect.status}
+                            helperText={eDateCorrect.message}
                             value={eDate}
                             onChange={(event) => onChange(event)}
                             type="date"
@@ -336,6 +618,8 @@ export default function Filter({open, handleClose,updateServices}) {
 
                         <TextField id="eTime"
                                    label="End Time"
+                                   error={eTimeCorrect.status}
+                                   helperText={eTimeCorrect.message}
                                    value={eTime}
                                    onChange={(event) => onChange(event)}
                                    type="time"
@@ -351,7 +635,8 @@ export default function Filter({open, handleClose,updateServices}) {
                 </ListItem>
                 <Divider/>
                 <ListItem>
-                    <Button color="primary"
+                    <Button disabled={checkErrors()}
+                            color="primary"
                             variant="contained"
                             onClick={Filter}
                     >Filter</Button>

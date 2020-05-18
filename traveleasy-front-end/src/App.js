@@ -19,6 +19,7 @@ import UserServices from './pages/services/UserServices';
 import AddService from './pages/service/AddService';
 import EditService from './pages/service/EditService'
 import Scheduler from './pages/scheduler/Scheduler'
+import Manager from "./pages/manager/Manager";
 function App() {
 
   const theme = createMuiTheme({
@@ -50,7 +51,7 @@ function App() {
           <Route path="/admin" component={AdminPage}/>
           <Route path="/profile/:id" component={Profile} />
 
-          <Route path="/services/:id" component={UserServices} />
+          <Route path="/services/manager" component={Manager} />
           <Route path="/services" component={Services} />
           <Route path="/scheduler" component={Scheduler} />
 

@@ -10,5 +10,6 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<EventEntity,Long> {
 
     List<EventEntity> findAllByUser(UserEntity userEntity);
+    List<EventEntity> findAllByProvider(UserEntity userEntity);
     List<EventEntity> findAllByService(ServiceEntity serviceEntity);
 }

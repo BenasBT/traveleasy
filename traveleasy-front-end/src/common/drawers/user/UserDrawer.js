@@ -43,8 +43,7 @@ export default function UserDrawer ({open,handleClose}) {
 
     let onMyServices = (event) => {
         event.preventDefault();
-
-        history.push("/services/" + currentUser.id);
+        history.push("/services/manager");
 
     };
 

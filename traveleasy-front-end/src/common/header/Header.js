@@ -96,8 +96,7 @@ export default function Header(){
     };
     let deleteEvent = (e,event) =>{
         e.preventDefault();
-        console.log(events);
-        console.log(event);
+
 
         let tempEvent  = events.find((e) => e.id === event.id);
 
@@ -220,7 +219,6 @@ export default function Header(){
             editRequest.end_time = "";
         }
 
-        console.log(editRequest);
         SendEditEvent(editRequest).then(() =>{
             getScheduler().then((events) => {
                 setEvents(events);
@@ -304,7 +302,7 @@ export default function Header(){
             <LoginPage  open={openLogin} handleClose={onCloseLogin}/>
 
             <CartDrawer open={openCart} handleClose={onCartClick}
-                        events={events}
+                        events={events} currentUser={currentUser}
                         deleteEvent={deleteEvent} editEvent={SubmitEditEvent} deleteEvents={deleteEvents}/>
 
             <UserDrawer open={openUser} handleClose={onProfileClick}/>

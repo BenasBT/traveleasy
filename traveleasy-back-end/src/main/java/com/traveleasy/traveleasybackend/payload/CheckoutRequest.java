@@ -9,11 +9,7 @@ import java.util.List;
 
 @Data
 public class CheckoutRequest {
-//    events:events,
-//    pice:"",
-//    card_numer:cardNr,
-//    expiration_date:expDate,
-//    ccv_cvc:ccv
+
 
     List<EventEntity> events;
 

@@ -7,6 +7,7 @@ import {getMyServices, getUser} from '../../utils/APIUtils';
 import UserServices from "../services/UserServices";
 import MarkedServices from "../services/MarkedServices";
 import Archive from "./Archive";
+import MyOrders from "./MyOrders";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -89,6 +90,7 @@ export default function Profile() {
 
                     <UserServices/>
                     {checkUser(user) ? <MarkedServices/> : null}
+                    {checkUser(user) ? <MyOrders/> : null}
                     {checkUser(user) ? <Archive/> : null}
                 </Card>
 

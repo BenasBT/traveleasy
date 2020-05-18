@@ -47,6 +47,10 @@ public class ArchiveEntity extends AbstractEntity{
     @Column(name = "service_price_type")
     private PriceTypes service_price_type;
 
+    //    event_price_counter double,
+    @Column(name = "event_price_counter")
+    private double event_price_counter;
+
     //    event_price double,
     @Column(name = "event_price")
     private double event_price;

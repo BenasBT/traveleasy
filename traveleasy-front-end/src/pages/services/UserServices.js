@@ -1,13 +1,14 @@
 import React, {useEffect, useState} from "react";
 import { getUserServices} from '../../utils/APIUtils';
 import {useParams} from "react-router-dom";
-import {getServices} from '../../utils/APIUtils';
+import {getServices,getUserServicesEvents} from '../../utils/APIUtils';
 import Service from "../../components/service";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import {useSelector} from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
 
@@ -41,6 +42,7 @@ export default function UserServices() {
     const [services, setServices] = useState([]);
     const [state, forceState] = useState([]);
     const classes = useStyles();
+    const currentUser = useSelector(state => state.currentUserReducer);
 
     let {id} = useParams();
 
@@ -64,18 +66,27 @@ export default function UserServices() {
         else return null;
     };
 
+
     let mappedServices;
     useEffect(() => {
-        getUserServices(id).then(r => {
+        let id2 = id;
+        if(typeof id === 'undefined'){
+            id2 = 2;
+            if( currentUser !== null) {
+                id2 = currentUser.id
+            }
+        }
+        getUserServices(id2).then(r => {
             setServices(r);
         })
 
-    }, []);
+    }, [currentUser]);
 
 
     if(typeof services !== 'undefined'){
         mappedServices = mapServices();
     }
+
     return(
         <div className={classes.center}>
             <p>Services:</p>
@@ -83,6 +94,7 @@ export default function UserServices() {
                 <List className={classes.root} subheader={<li />}>
                     {services ? mappedServices : null}
                 </List>
+
         </div>
 
     );

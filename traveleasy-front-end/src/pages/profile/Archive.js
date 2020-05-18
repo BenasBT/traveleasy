@@ -67,16 +67,16 @@ export default function Archive() {
                         {e.event_start_date !== null || e.event_end_date !== null ?
                             <Typography variant="body2" gutterBottom>
                                 {"Event Date: "}
-                                {e.event_start_date !== null ? `from ${e.event_start_date}` : ""}
-                                {e.event_end_date !== null ?`to: ${e.event_end_date}` : ""}
+                                {e.event_start_date !== null ? ` from ${e.event_start_date}` : ""}
+                                {e.event_end_date !== null ?` to: ${e.event_end_date}` : ""}
                             </Typography>
                             :
                             null}
                         {e.event_start_time !== null || e.event_end_time !== null ?
                             <Typography variant="body2" gutterBottom>
                                 {"Event Time: "}
-                                {e.event_start_time !== null ? `from ${e.event_start_time}` : ""}
-                                {e.event_end_time !== null ?`to: ${e.event_end_time}` : ""}
+                                {e.event_start_time !== null ? ` from ${e.event_start_time}` : ""}
+                                {e.event_end_time !== null ?` to: ${e.event_end_time}` : ""}
                             </Typography>
                             :
                             null}
@@ -88,6 +88,9 @@ export default function Archive() {
 
                         <Typography gutterBottom variant="body2" component="h2">
                             Price: {e.service_price} &euro; per {e.service_price_type}
+                        </Typography>
+                        <Typography gutterBottom variant="body2" component="h2">
+                            Event price: {e.event_price} &euro;
                         </Typography>
                     </CardContent>
                 </Card>
@@ -116,7 +119,7 @@ export default function Archive() {
                         <CardContent>
                             <ListItem button onClick={event => openData(event,arc)} >
                                 <Typography variant="body2" gutterBottom>
-                                    {`Full Price: ${arc.price} Archive ID: ${arc.id}`}
+                                    Full Price: {arc.price} &euro; Archive ID: {arc.id}
                                 </Typography>
                             </ListItem>
 
@@ -139,7 +142,6 @@ export default function Archive() {
         getUserArchive().then(r => {
             setArchive(
                 r.map((r) => {
-                    console.log(r);
                     var o = Object.assign({}, r);
                     o.show = false;
                     return o;
@@ -157,7 +159,7 @@ export default function Archive() {
         <div className={classes.center}>
             <p>Archive:</p>
 
-            <List aria-label={"aaaaa"} className={classes.root} subheader={<li />}>
+            <List className={classes.root} subheader={<li />}>
                 {archive ? mappedArchive : null}
             </List>
         </div>

@@ -14,6 +14,7 @@ import {getScheduler, SendEditEvent} from "../../../utils/APIUtils";
 import Button from "@material-ui/core/Button";
 import FormGroup from "@material-ui/core/FormGroup";
 import Checkout from "../../../components/checkout/Checkout";
+import ViewEvent from "../../../components/event/ViewEvent";
 
 
 const useStyles = makeStyles(theme => ({
@@ -24,11 +25,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 // TODO: Pakeisti i kortas
-export default function CartDrawer ({open,handleClose,events,deleteEvent,editEvent,deleteEvents}) {
+export default function CartDrawer ({open,handleClose,events,deleteEvent,editEvent,deleteEvents,currentUser}) {
 
     const [selectedEvent, setSelectedEvent] = useState({});
     const [openEditEvent, setOpenEditEvent] = useState(false);
     const [checkoutOpen, setCheckoutOpen] = useState(false);
+    const [viewEvent, setViewEvent] = useState(false);
 
     const classes = useStyles();
     const sideList =
@@ -40,8 +42,10 @@ export default function CartDrawer ({open,handleClose,events,deleteEvent,editEve
                 {events.map((event, index) => (
                     <div>
                         <ListItem  key={index}>
+                            <ListItem button onClick={e=> onViewEvent(e,event)} >
+                                <ListItemText primary={event.service.name} />
+                            </ListItem>
 
-                            <ListItemText primary={event.service.name} />
                             <IconButton aria-label="delete" color="primary" onClick={e => openEdit(e,event)}>
                                 <EditIcon />
                             </IconButton>
@@ -67,7 +71,6 @@ export default function CartDrawer ({open,handleClose,events,deleteEvent,editEve
     };
 
     let openEdit = (e,event) =>{
-        console.log(event);
         e.preventDefault();
         setSelectedEvent(event);
         setOpenEditEvent(true);
@@ -81,7 +84,39 @@ export default function CartDrawer ({open,handleClose,events,deleteEvent,editEve
     let closeCheckout = (e) =>{
         setCheckoutOpen(false)
     };
+    let onViewEvent = (e,event) =>{
+        e.preventDefault();
+        console.log("event view");
+        setSelectedEvent(event);
+        setViewEvent(true);
 
+    };
+
+    let closeEventView = (e) =>{
+        e.preventDefault();
+        setViewEvent(false);
+
+    };
+
+    let onEditClick = (e) =>{
+        e.preventDefault();
+        setViewEvent(false);
+        setOpenEditEvent(true);
+    };
+
+    let fullPrice =() =>{
+        let price = 0;
+        events.forEach((event) => {price += event.price});
+        return price;
+    };
+
+    let deleteEventWrapper = (e,event) =>{
+        e.preventDefault();
+        console.log("Close");
+        setViewEvent(false);
+        deleteEvent(e,event);
+
+    };
 
     return(
         <div>
@@ -89,6 +124,7 @@ export default function CartDrawer ({open,handleClose,events,deleteEvent,editEve
             <Drawer anchor='right' open={open} onClose={handleClose}>
                 {sideList}
 
+                Full Price: {fullPrice()}
                 <Button color="primary"
                         variant="contained"
                         onClick={openCheckout}
@@ -100,7 +136,10 @@ export default function CartDrawer ({open,handleClose,events,deleteEvent,editEve
             <Checkout events={events}
                       open={checkoutOpen}
                       handleClose={closeCheckout}
-                      deleteEvents={deleteEvents}/>
+                      deleteEvents={deleteEvents} price={fullPrice()}/>
+
+            <ViewEvent event={selectedEvent} open={viewEvent} handleClose={event => closeEventView(event)}
+                       currentUser={currentUser} onDeleteClick={deleteEventWrapper} onEditClick={onEditClick} />
 
             <EditEvent event={selectedEvent} open={openEditEvent}
                        handleClose={closeEventEdit}

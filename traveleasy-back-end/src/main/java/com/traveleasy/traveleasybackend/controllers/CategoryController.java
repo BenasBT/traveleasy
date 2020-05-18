@@ -3,6 +3,8 @@ package com.traveleasy.traveleasybackend.controllers;
 import com.traveleasy.traveleasybackend.models.entities.CategoryEntity;
 import com.traveleasy.traveleasybackend.repositories.CategoryRepository;
 import com.traveleasy.traveleasybackend.repositories.ServiceRepository;
+import com.traveleasy.traveleasybackend.security.CurrentUser;
+import com.traveleasy.traveleasybackend.security.UserPrincipal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,13 @@ public class CategoryController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public List<CategoryEntity> getAllCategories() {
         return categoryRepository.findAll();
+
+    }
+
+    @GetMapping("/t")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public String t(@CurrentUser UserPrincipal userPrincipal) {
+        return userPrincipal.getId().toString();
 
     }
 

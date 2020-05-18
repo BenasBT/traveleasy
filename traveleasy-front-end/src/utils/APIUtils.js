@@ -1,6 +1,7 @@
 import { API_BASE_URL, POLL_LIST_SIZE, ACCESS_TOKEN } from '../constants';
 import apiClient from './apiClient.js'
 import {setUser} from "../redux/actions/index";
+import swal from "sweetalert";
 
 
 export const login = async ({password,email}) =>{
@@ -9,7 +10,7 @@ export const login = async ({password,email}) =>{
         let token = res.data.accessToken;
 
         localStorage.setItem(ACCESS_TOKEN,"Bearer " + token); // TODO: change to redux
-
+        swal ("Ok","" ,  "success" );
     }catch (e) {
         console.log(e);
         console.log("Error login");
@@ -77,10 +78,11 @@ export const addServiceToEvents = async (addRequest) =>{
         };
         const res = await apiClient.post("/scheduler/add",addRequest,{headers});
         let responce = res;
+        swal ("Ok","Event added" ,  "success" );
 
     }catch (e) {
+        swal ("Ups","Cant add event, chosen date is taken" ,  "error" );
         console.log(e);
-        console.log("Error adding service");
     }
 
 };
@@ -92,8 +94,9 @@ export const editService = async (editRequest) =>{
         };
         const res = await apiClient.patch("/service/edit",editRequest,{headers});
         let responce = res;
-
+        swal ("Ok","Service information changed" ,  "success" );
     }catch (e) {
+        swal ("Ups","Cant edit service" ,  "error" );
         console.log(e);
         console.log("Error adding service");
     }
@@ -107,9 +110,10 @@ export const addServiceFiles = async (addRequestFiles) =>{
         };
         const res = await apiClient.post("/service/add",addRequestFiles,{headers});
         let responce = res;
-
+        swal ("Ok","Service added" ,  "success" );
     }catch (e) {
         console.log(e);
+        swal ("Ups","Cant add service" ,  "error" );
         console.log("Error adding service");
     }
 
@@ -188,10 +192,13 @@ export const deleteService = async (id) =>{
     try {
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.delete("/service/"+id,{headers});
+        swal ("Ok","Service deleted" ,  "success" );
         return res.data;
+
     }catch (e) {
         console.log(e);
         console.log("Error login");
+        swal ("Ups","Cant delete service" ,  "error" );
     }
     return null;
 
@@ -217,10 +224,11 @@ export const SenddeleteEvent = async (id) =>{
     try {
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.delete("/scheduler/delete/" + id,{headers});
-        console.log(res);
+        swal ("Ok","Event deleted" ,  "success" );
         return res.data;
 
     }catch (e) {
+        swal ("Ups","Cant delete Event" ,  "error" );
         console.log(e);
         console.log("Error login");
     }
@@ -291,10 +299,12 @@ export const markService = async (id) =>{
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.get("/service/mark/" + id,{headers});
         console.log(res);
+        swal ("Ok","Service marked" ,  "success" );
 
     }catch (e) {
         console.log(e);
         console.log("Error login");
+        swal ("Ups","Cant mark service" ,  "error" );
     }
     return null;
 
@@ -389,7 +399,7 @@ export const deleteCategory = async (id) =>{
 export const sendCheckout = async (checkoutRequest) =>{
     try {
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
-        const res =await apiClient.post("checkout/archive/",checkoutRequest ,{headers});
+        const res =await apiClient.post("checkout/",checkoutRequest ,{headers});
         console.log(res);
         return res.data;
 
@@ -404,6 +414,62 @@ export const getUserArchive = async () =>{
     try {
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.get("checkout/" ,{headers});
+        console.log(res);
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+};
+
+export const getManagedPurchases = async () =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("checkout/managed/" ,{headers});
+        console.log(res);
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+};
+
+export const getUserPurchases = async () =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.get("checkout/purchases/" ,{headers});
+        console.log(res);
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+};
+
+export const deletePurchase = async (id) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.delete("checkout/purchase/" + id ,{headers});
+        console.log(res);
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+    }
+    return null;
+};
+
+export const deletePurchaseEvent = async (id) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        const res =await apiClient.delete("checkout/" + id ,{headers});
         console.log(res);
         return res.data;
 

@@ -11,6 +11,7 @@ import DropZone from "../../components/dropzone/DropZone";
 import Grid from "@material-ui/core/Grid";
 import {makeStyles} from "@material-ui/core/styles";
 import {addServiceToEvents} from "../../utils/APIUtils";
+import swal from 'sweetalert';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -102,7 +103,7 @@ export default function AddService({open,handleClose,service}) {
             price_counter: priceCounter
         };
 
-
+        console.log(addRequest);
         if(addRequest.people_count === ""){
             addRequest.people_count =0;
         }
@@ -112,8 +113,14 @@ export default function AddService({open,handleClose,service}) {
         if(addRequest.start_date == null){
             addRequest.start_date = "";
         }
-        if(addRequest.end_date == null){
+        if(addRequest.end_date === null){
             addRequest.start_date = "";
+        }
+        if(addRequest.start_time === ""){
+            addRequest.start_time = "00:00";
+        }
+        if(addRequest.end_time === ""){
+            addRequest.end_time = "24:00";
         }
         if(fixedDate){
             addRequest.end_date = "";
@@ -122,7 +129,10 @@ export default function AddService({open,handleClose,service}) {
 
 
         console.log(addRequest);
-        addServiceToEvents(addRequest).then( (r) => console.log(r));
+        addServiceToEvents(addRequest).then( (r) => {
+            // swal ( "Oops" ,  "Something went wrong!" ,  "error" )
+            console.log(r);
+        });
     };
 
     //servicetime > inputtime false
@@ -186,7 +196,7 @@ export default function AddService({open,handleClose,service}) {
                 break;
 
             case 'sTime':
-                if(service.end_time !== null && service.start_time !== null) {
+                if(service.end_time !== "00:00:00" && service.start_time !== "00:00:00") {
                     if (!isLaterTime(inputValue, service.start_time)) {
                         setSTimeCorrect({
                             status: true,
@@ -275,7 +285,9 @@ export default function AddService({open,handleClose,service}) {
                 break;
 
             case 'eTime':
-                if(service.end_time !== null && service.start_time !== null){
+                console.log(service.end_time)
+                console.log(service.start_time)
+                if(service.end_time !== "00:00:00" && service.start_time !== "00:00:00"){
                     if(!isLaterTime(service.end_time,inputValue)){
                         setETimeCorrect({
                             status:true,

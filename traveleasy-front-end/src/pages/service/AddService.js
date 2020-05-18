@@ -22,6 +22,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import {Typography} from "@material-ui/core";
 import InputAdornment from '@material-ui/core/InputAdornment';
+import swal from "sweetalert";
 export default function AddService() {
 
     const currentUser = useSelector(state => state.currentUserReducer);
@@ -49,6 +50,15 @@ export default function AddService() {
     const [openPriceType, setOpenPriceType] = useState(false);
     const [priceType, setPriceType] = useState(null);
     const [priceTypes, setPriceTypes] = useState(null);
+
+    const [sTimeCorrect, setSTimeCorrect] = useState({status:false,message:""});
+    const [eTimeCorrect, setETimeCorrect] = useState({status:false,message:""});
+
+    const [sDateCorrect, setSDateCorrect] = useState({status:false,message:""});
+    const [eDateCorrect, setEDateCorrect] = useState({status:false,message:""});
+
+    const [minPplCntCorrect, setMinPplCntCorrect] = useState({status:false,message:""});
+    const [maxPplCntCorrect, setMaxPplCntCorrect] = useState({status:false,message:""});
 
     const history = useHistory();
     const dispatch = useDispatch();
@@ -110,6 +120,12 @@ export default function AddService() {
         if(addRequest.end_date == null){
             addRequest.start_date = "";
         }
+        if(addRequest.start_time === ""){
+            addRequest.start_time = "00:00";
+        }
+        if(addRequest.end_time === ""){
+            addRequest.end_time = "24:00";
+        }
 
         const formData = new FormData();
 
@@ -125,17 +141,6 @@ export default function AddService() {
         );
 
 
-        // addService(addRequest).then(
-        //     (r) => {
-        //         console.log(r);
-        //         addServiceFiles(formData).then(
-        //             (r) => {console.log(r)}
-        //         )
-        //     }
-        // );
-
-
-        //history.push("/");
 
     };
 
@@ -158,26 +163,210 @@ export default function AddService() {
                 break;
 
             case 'minPplCnt':
+                if(maxPplCnt !== "" && inputValue > maxPplCnt){
+                    setMinPplCntCorrect({
+                        status:true,
+                        message:`has to be smaller`
+                    });
+                }else {
+                    setMinPplCntCorrect({
+                        status:false,
+                        message:""
+                    });
+                    setMaxPplCntCorrect({
+                        status:false,
+                        message:""
+                    });
+
+                }
                 setMinPplCnt(inputValue);
                 break;
 
             case 'maxPplCnt':
+                if(minPplCnt !== "" && inputValue < minPplCnt){
+                    setMaxPplCntCorrect({
+                        status:true,
+                        message:`has to be bigger`
+                    });
+                }else {
+                    setMaxPplCntCorrect({
+                        status:false,
+                        message:""
+                    });
+                    setMinPplCntCorrect({
+                        status:false,
+                        message:""
+                    });
+
+                }
                 setMaxPplCnt(inputValue);
                 break;
 
             case 'sTime':
+                if(eTime !== "" && typeof inputValue !== 'undefined' ){
+                    let inputParts = inputValue.split(":");
+                    let eTimeParts = eTime.split(":");
+                    if (inputParts[0] > eTimeParts[0]) {
+                        setSTimeCorrect({
+                            status:true,
+                            message:`Start time has to be smaller`
+                        });
+                    }else if(inputParts[0] === eTimeParts[0]){
+                        if(inputParts[1] > eTimeParts[1]){
+                            setSTimeCorrect({
+                                status:true,
+                                message:`Start time has to be smaller`
+                            });
+                        }else {
+                            setETimeCorrect({
+                                status:false,
+                                message:""
+                            });
+                            setSTimeCorrect({
+                                status: false,
+                                message: ``
+                            });
+                        }
+                    }else {
+                        setETimeCorrect({
+                            status:false,
+                            message:""
+                        });
+                        setSTimeCorrect({
+                            status: false,
+                            message: ``
+                        });
+                    }
+                }else {
+                    setETimeCorrect({
+                        status:false,
+                        message:""
+                    });
+                    setSTimeCorrect({
+                        status: false,
+                        message: ``
+                    });
+
+                }
                 setStime(inputValue);
                 break;
 
             case 'sDate':
+
+                if(eDate !== ""){
+                    let inputDate = new Date(inputValue);
+                    let enddate = new Date(eDate);
+                    if(enddate.getTime() !== 0
+                        && inputDate.getTime() > enddate.getTime()){
+                        setSDateCorrect({
+                            status:true,
+                            message:"Start has to be earlier"
+                        });
+                    }else {
+                        setEDateCorrect({
+                            status:false,
+                            message:""
+                        });
+                        setSDateCorrect({
+                            status: false,
+                            message: ``
+                        });
+                    }
+                }else
+                {
+                    setSDateCorrect({
+                        status:false,
+                        message:""
+                    });
+                    setEDateCorrect({
+                        status: false,
+                        message: ``
+                    });
+                }
                 setSDate(inputValue);
                 break;
 
             case 'eTime':
+                if(sTime !== "" && typeof inputValue !== 'undefined') {
+                    let inputParts = inputValue.split(":");
+                    let eTimeParts = sTime.split(":");
+                    if (inputParts[0] < eTimeParts[0]) {
+                        setETimeCorrect({
+                            status: true,
+                            message: `End time has to be bigger`
+                        });
+                    } else if (inputParts[0] === eTimeParts[0]) {
+                        if (inputParts[1] < eTimeParts[1]) {
+                            setETimeCorrect({
+                                status: true,
+                                message: `End time has to be bigger`
+                            });
+                        }else {
+                            setETimeCorrect({
+                                status:false,
+                                message:""
+                            });
+                            setSTimeCorrect({
+                                status: false,
+                                message: ``
+                            });
+                        }
+                    }else{
+                        setETimeCorrect({
+                            status: false,
+                            message: ``
+                        });
+                        setSTimeCorrect({
+                            status:false,
+                            message:""
+                        });
+                    }
+                }else {
+                    setETimeCorrect({
+                        status:false,
+                        message:""
+                    });
+                    setSTimeCorrect({
+                        status: false,
+                        message: ``
+                    });
+                }
+
                 setEtime(inputValue);
                 break;
 
             case 'eDate':
+                if(eDate !== ""){
+                    let inputDate = new Date(inputValue);
+                    let enddate = new Date(eDate);
+                    if(enddate.getTime() !== 0
+                        && inputDate.getTime() < enddate.getTime()){
+                        setEDateCorrect({
+                            status:true,
+                            message:"End has to be later"
+                        });
+                    }else {
+                        setEDateCorrect({
+                            status:false,
+                            message:""
+                        });
+                        setSDateCorrect({
+                            status: false,
+                            message: ``
+                        });
+                    }
+                }else
+                {
+                    setEDateCorrect({
+                        status:false,
+                        message:""
+                    });
+                    setSDateCorrect({
+                        status: false,
+                        message: ``
+                    });
+                }
+
                 setEDate(inputValue);
                 break;
 
@@ -190,6 +379,27 @@ export default function AddService() {
         }
 
     };
+
+    let checkErrors = () => {
+        if (minPplCntCorrect.status) {
+            return true;
+        } else if (maxPplCntCorrect.status) {
+            return true;
+        } else if (sDateCorrect.status) {
+            return true;
+        } else if (eDateCorrect.status) {
+            return true;
+        } else if (sTimeCorrect.status) {
+            return true;
+        } else if (eTimeCorrect.status) {
+            return true;
+        } else if(priceType == null){
+            return true;
+        }else {
+
+            return false;
+        }
+    }
 
     let onOtherCategory = (e) =>{
         e.preventDefault();
@@ -327,6 +537,7 @@ export default function AddService() {
                 <FormGroup aria-label="position" row>
                     <TextField id="price"
                                label="Displayed Price"
+                               type={"number"}
                                value={price}
                                onChange={(event) => onChange(event)}
                                InputProps={{
@@ -338,6 +549,7 @@ export default function AddService() {
                         select
                         label="Price Type"
                         id="price_types"
+                        error={priceType === null}
                         value={priceType}
                         open={openPriceType}
                         className={classes.select}
@@ -352,13 +564,19 @@ export default function AddService() {
                 </FormGroup>
                 <FormGroup aria-label="position" row>
                     <TextField id="minPplCnt"
+                               type={"number"}
                                label="Mim people count"
+                               error={minPplCntCorrect.status}
+                               helperText={minPplCntCorrect.message}
                                value={minPplCnt}
                                onChange={(event) => onChange(event)}
                     />
 
                     <TextField id="maxPplCnt"
+                               type={"number"}
                                label="Max people count"
+                               error={maxPplCntCorrect.status}
+                               helperText={maxPplCntCorrect.message}
                                value={maxPplCnt}
                                onChange={(event) => onChange(event)}
                     />
@@ -369,6 +587,8 @@ export default function AddService() {
                     <TextField
                         id="sDate"
                         label="Start Date"
+                        error={sDateCorrect.status}
+                        helperText={sDateCorrect.message}
                         value={sDate}
                         onChange={(event) => onChange(event)}
                         type="date"
@@ -380,6 +600,8 @@ export default function AddService() {
 
                     <TextField id="sTime"
                                label="Start Time"
+                               error={sTimeCorrect.status}
+                               helperText={sTimeCorrect.message}
                                value={sTime}
                                onChange={(event) => onChange(event)}
                                type="time"
@@ -401,6 +623,8 @@ export default function AddService() {
                         id="eDate"
                         label="End Date"
                         value={eDate}
+                        error={eDateCorrect.status}
+                        helperText={eDateCorrect.message}
                         onChange={(event) => onChange(event)}
                         type="date"
                         className={classes.textField}
@@ -412,6 +636,8 @@ export default function AddService() {
                     <TextField id="eTime"
                                label="End Time"
                                value={eTime}
+                               error={eTimeCorrect.status}
+                               helperText={eTimeCorrect.message}
                                onChange={(event) => onChange(event)}
                                type="time"
                                className={classes.textField}
@@ -429,7 +655,8 @@ export default function AddService() {
                 <DropZone  files={files}
                            setFiles={setFiles} />
 
-                <Button color="primary"
+                <Button disabled={checkErrors()}
+                        color="primary"
                         variant="contained"
                         onClick={submit}
                 >Submit</Button>

@@ -65,7 +65,6 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
         }else {
             event.fixed_date = false;
         }
-        console.log(event.fixed_date);
         forceStateUpdate(!state);
     };
 
@@ -116,7 +115,6 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
                 return false
             }
         }
-        console.log("true");
         return true
 
     };
@@ -328,7 +326,6 @@ export default function EditEvent({open,handleClose,event,deleteEvent,editEvent}
                     && new Date(event.start_date).getTime() !== 0
                     && inputDate.getTime() === new Date(event.start_date).getTime() ){
 
-                    console.log("hit");
 
                     setEDateCorrect({
                         status: true,

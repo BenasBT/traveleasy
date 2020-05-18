@@ -48,8 +48,6 @@ export default function AdminCategories() {
     const filterState = useSelector(state => state.filterReducer);
 
     let checkCategories =(categories)=>{
-        console.log(categories);
-        console.log(filterState.categories);
         if (typeof filterState.categories === 'undefined'){
             return true
         }
@@ -78,7 +76,6 @@ export default function AdminCategories() {
     };
 
     let filter = (services) =>{
-        console.log("filter");
         console.log(services);
         console.log(filterState);
         let filteredServices = services.filter( (service) => {

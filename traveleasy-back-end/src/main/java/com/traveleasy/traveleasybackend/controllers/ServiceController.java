@@ -330,6 +330,7 @@ public class ServiceController {
         String dir = "/home/anthon/Projects/traveleasy/ftp/" + serviceEntity.getId() + "/";
 
         Set<PhotoEntity> photoEntitySet = new HashSet<>();
+
         for (int i = 0; i < files.length; i++) {
 
             try {
@@ -355,6 +356,7 @@ public class ServiceController {
                 serviceRepository.delete(serviceEntity);
                 return  new ResponseEntity<>("Failed", HttpStatus.BAD_REQUEST);
             }
+
         }
 
         serviceEntity.setService_photo(photoEntitySet);

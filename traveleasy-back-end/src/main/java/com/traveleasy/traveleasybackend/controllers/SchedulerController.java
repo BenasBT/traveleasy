@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -68,6 +69,16 @@ public class SchedulerController {
 
     }
 
+    @GetMapping("/myEvents")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public List<EventEntity> getMyServicesEvents(@CurrentUser UserPrincipal userPrincipal) {
+
+        return eventRepository.findAllByProvider(
+                userRepository.findById(userPrincipal.getId()).orElseThrow(() -> new RuntimeException("User not found"))
+        );
+
+    }
+
     private Date fixDate(Date dt){
         Calendar c = Calendar.getInstance();
         c.setTime(dt);
@@ -90,11 +101,18 @@ public class SchedulerController {
                         log.error("This Date is taken fixed event {}", newEvent.getStart_date());
                         return false;
 
-                    }else if(newEvent.getStart_date().compareTo(event.getEnd_date()) <= 0
-                            && newEvent.getStart_date().compareTo(event.getStart_date()) >= 0){
-
-                        log.error("Event already exists during this date");
-                        return false;
+                    }else if(event.getEnd_date() != null){
+                        if(newEvent.getStart_date().compareTo(event.getEnd_date()) <= 0
+                                && newEvent.getStart_date().compareTo(event.getStart_date()) >= 0){
+                            log.error("Event exists during this time");
+                            return false;
+                        }
+                    }else if (newEvent.getEnd_date() != null){
+                        if(event.getStart_date().compareTo(newEvent.getEnd_date()) <= 0
+                                && event.getStart_date().compareTo(newEvent.getStart_date()) >= 0){
+                            log.error("A fixed event exists during this time");
+                            return false;
+                        }
                     }
                 } else {
                     if (newEvent.getEnd_date() == null) {
@@ -180,7 +198,7 @@ public class SchedulerController {
         eventEntity.setUser(userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new RuntimeException("User not found")));
 
-        ServiceEntity serviceEntity =serviceRepository.findById(jsonObject.getJSONObject("service")
+        ServiceEntity serviceEntity = serviceRepository.findById(jsonObject.getJSONObject("service")
                 .getLong("id"))
                 .orElseThrow(() -> new RuntimeException("service not found"));
 

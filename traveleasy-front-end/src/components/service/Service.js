@@ -58,9 +58,10 @@ export default function Service({service,servicesState,ps,fs,CheckUserClicked,ma
 
 
     let checkCurrentUser = () =>{
-
-        if(currentUser.id === service.user.id){
-            return true;
+        if(currentUser !== null) {
+            if (currentUser.id === service.user.id) {
+                return true;
+            }
         }
         return false;
     };

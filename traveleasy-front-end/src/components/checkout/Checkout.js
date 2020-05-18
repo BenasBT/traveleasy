@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function Checkout({events, open, handleClose,deleteEvents}) {
+export default function Checkout({events, open, handleClose,deleteEvents,price}) {
 
 
     const [cardNr, setCardNr] = useState("");
@@ -60,7 +60,7 @@ export default function Checkout({events, open, handleClose,deleteEvents}) {
         e.preventDefault();
         let checkoutRequest ={
             events:events,
-            price:0,
+            price:price,
             card_number:cardNr,
             expiration_date:expDate,
             ccv_cvc:ccv

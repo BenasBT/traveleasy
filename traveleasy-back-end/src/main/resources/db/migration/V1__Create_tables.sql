@@ -74,6 +74,7 @@ CREATE TABLE archive (
 
     service_price double,
     service_price_type varchar(255) NOT NULL,
+    event_price_counter double,
     event_price double,
     full_price double,
 
@@ -111,6 +112,25 @@ CREATE TABLE event (
     price_counter double,
     price double,
     PRIMARY KEY (id)
+);
+CREATE TABLE purchase (
+   id BIGINT NOT NULL AUTO_INCREMENT,
+   purchase_id BIGINT NOT NULL,
+   service_id BIGINT NOT NULL REFERENCES service(id),
+   user_id BIGINT NOT NULL REFERENCES users(id),
+   provider_id BIGINT NOT NULL REFERENCES users(id),
+
+   start_time time,
+   end_time time,
+
+   start_date date,
+   end_date date,
+   people_count integer,
+
+   price_counter double,
+   price double,
+   full_price double,
+   PRIMARY KEY (id)
 );
 
 CREATE TABLE marked (

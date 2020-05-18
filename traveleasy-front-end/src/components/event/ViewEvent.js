@@ -159,9 +159,10 @@ export default function ViewEvent({open,handleClose,event,currentUser,onEditClic
 
 
     let checkCurrentUser = () =>{
-
-        if(currentUser.id === event.service.user.id){
-            return true;
+        if(currentUser !== null) {
+            if (currentUser.id === event.service.user.id) {
+                return true;
+            }
         }
         return false;
     };
@@ -202,12 +203,6 @@ export default function ViewEvent({open,handleClose,event,currentUser,onEditClic
         return null;
     }
     let provider = event.service.user;
-
-    let calculateFullPrice = () =>{
-        console.log();
-
-        return 0
-    };
 
     return(
         <MyModal modalHeader={event.service.name} open={open} handleClose={handleClose}>
