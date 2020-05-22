@@ -244,7 +244,7 @@ export default function MyOrders() {
               <CardContent>
                   <ListItem button onClick={event => openData(event,order)}>
                       <Typography gutterBottom variant="body1" component="h2" >
-                          ID {order.id} Order price {order.price}
+                          ID {order.id} Order price {order.price} &euro;
                       </Typography>
                   </ListItem>
 

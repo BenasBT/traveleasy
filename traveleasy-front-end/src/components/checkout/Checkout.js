@@ -70,6 +70,7 @@ export default function Checkout({events, open, handleClose,deleteEvents,price})
         sendCheckout(checkoutRequest).then(
             deleteEvents(e)
         );
+        handleClose()
     };
 
     let checkEvent = () =>{

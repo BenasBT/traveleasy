@@ -401,10 +401,14 @@ export const sendCheckout = async (checkoutRequest) =>{
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.post("checkout/",checkoutRequest ,{headers});
         console.log(res);
+        swal ("Ok","events registered" ,  "success" );
+
         return res.data;
 
     }catch (e) {
         console.log(e);
+        swal ("Ups","Cant mark service" ,  "error" );
+
         console.log("Error login");
     }
     return null;
@@ -476,6 +480,27 @@ export const deletePurchaseEvent = async (id) =>{
     }catch (e) {
         console.log(e);
         console.log("Error login");
+    }
+    return null;
+};
+
+
+
+export const editUserDate = async (editUserDate) =>{
+    try {
+        const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
+        console.log(editUserDate);
+        const res =await apiClient.patch("user/",editUserDate ,{headers});
+        console.log(res);
+        swal ("Ok","Successfully edited data" ,  "success" );
+
+        return res.data;
+
+    }catch (e) {
+        console.log(e);
+        console.log("Error login");
+        swal ("Ups","Something went wrong" , "error" );
+
     }
     return null;
 };
