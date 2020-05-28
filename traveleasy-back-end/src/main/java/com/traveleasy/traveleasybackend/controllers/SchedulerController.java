@@ -570,7 +570,7 @@ public class SchedulerController {
 
         eventEntity.setPrice_counter(jsonObject.getDouble("price_counter"));
 
-        if(!validate(eventEntity)) {
+        if(!valideteWithPurchases(eventEntity)) {
             return new ResponseEntity<>("Event time is taken" , HttpStatus.CONFLICT);
         }
         if(eventEntity.getStart_date() != null) {
