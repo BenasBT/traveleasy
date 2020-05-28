@@ -1,9 +1,6 @@
 package com.traveleasy.traveleasybackend.repositories;
 
-import com.traveleasy.traveleasybackend.models.entities.ArchiveEntity;
-import com.traveleasy.traveleasybackend.models.entities.EventEntity;
-import com.traveleasy.traveleasybackend.models.entities.PurchaseEntity;
-import com.traveleasy.traveleasybackend.models.entities.UserEntity;
+import com.traveleasy.traveleasybackend.models.entities.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,4 +13,6 @@ public interface PurchaseRepository extends JpaRepository<PurchaseEntity,Long> {
     List<PurchaseEntity> findAllByProvider(UserEntity userEntity);
 
     List<PurchaseEntity> findAllByPurchase(Long id);
+
+    List<PurchaseEntity> findAllByService(ServiceEntity serviceEntity);
 }

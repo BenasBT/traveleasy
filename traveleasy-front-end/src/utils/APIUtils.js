@@ -13,7 +13,7 @@ export const login = async ({password,email}) =>{
         swal ("Ok","" ,  "success" );
     }catch (e) {
         console.log(e);
-        console.log("Error login");
+        swal ("Ups","Something went wrong" , "error" );
     }
 
 };
@@ -52,7 +52,6 @@ export const register = async ({name,email,password}) =>{
 
     }catch (e) {
         console.log(e);
-        console.log("Error login");
     }
 
 };
@@ -98,7 +97,6 @@ export const editService = async (editRequest) =>{
     }catch (e) {
         swal ("Ups","Cant edit service" ,  "error" );
         console.log(e);
-        console.log("Error adding service");
     }
 
 };
@@ -228,8 +226,8 @@ export const SenddeleteEvent = async (id) =>{
         return res.data;
 
     }catch (e) {
-        swal ("Ups","Cant delete Event" ,  "error" );
-        console.log(e);
+        swal ("Ups","Can't delete Event" ,  "error" );
+
         console.log("Error login");
     }
     return null;
@@ -240,11 +238,14 @@ export const SendDeleteEvents = async () =>{
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.delete("/scheduler/delete/",{headers});
         console.log(res);
+        swal ("Ok","Event deleted" ,  "success" );
+
         return res.data;
 
     }catch (e) {
         console.log(e);
-        console.log("Error login");
+        swal ("Ups","Can't delete Event" , "error" );
+
     }
     return null;
 
@@ -254,11 +255,12 @@ export const SendEditEvent = async (editRequest) =>{
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.patch("/scheduler/edit",editRequest,{headers});
         console.log(res);
+        swal ("Ok","Event edited" ,  "success" );
         return res.data;
 
     }catch (e) {
         console.log(e);
-        console.log("Error login");
+        swal ("Ups","Something went wrong" , "error" );
     }
     return null;
 
@@ -273,7 +275,6 @@ export const getEvent = async (id) =>{
 
     }catch (e) {
         console.log(e);
-        console.log("Error login");
     }
     return null;
 
@@ -288,7 +289,7 @@ export const getPriceTypes = async () =>{
 
     }catch (e) {
         console.log(e);
-        console.log("Error login");
+
     }
     return null;
 
@@ -314,11 +315,13 @@ export const unmarkService = async (id) =>{
     try {
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.get("/service/unmark/" + id,{headers});
+        swal ("Ok","Service unmarked " ,  "success" );
+
         console.log(res);
 
     }catch (e) {
         console.log(e);
-        console.log("Error login");
+        swal ("Ups","Something went wrong" , "error" );
     }
     return null;
 
@@ -343,11 +346,13 @@ export const approveService = async (id) =>{
     try {
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.get("/service/approve/" + id ,{headers});
+        swal ("Ok","Service approved " ,  "success" );
         return res.data;
 
     }catch (e) {
         console.log(e);
-        console.log("Error login");
+        swal ("Ups","Something went wrong" , "error" );
+
     }
     return null;
 
@@ -357,11 +362,13 @@ export const denyService = async (id) =>{
     try {
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.get("/service/deny/" + id ,{headers});
+        swal ("Ok","Service denied " ,  "success" );
         return res.data;
 
     }catch (e) {
         console.log(e);
-        console.log("Error login");
+        swal ("Ups","Something went wrong" , "error" );
+
     }
     return null;
 };
@@ -370,13 +377,13 @@ export const approveCategory = async (id) =>{
     try {
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.get("/category/approve/" + id ,{headers});
-        console.log(id);
-        console.log(res);
+        swal ("Ok","Category approved " ,  "success" );
         return res.data;
 
     }catch (e) {
         console.log(e);
-        console.log("Error login");
+        swal ("Ups","Something went wrong" , "error" );
+
     }
     return null;
 
@@ -387,11 +394,12 @@ export const deleteCategory = async (id) =>{
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.delete("/category/" + id ,{headers});
         console.log(res);
+        swal ("Ok","Category deleted " ,  "success" );
         return res.data;
 
     }catch (e) {
         console.log(e);
-        console.log("Error login");
+        swal ("Ups","Something went wrong" , "error" );
     }
     return null;
 };
@@ -409,7 +417,6 @@ export const sendCheckout = async (checkoutRequest) =>{
         console.log(e);
         swal ("Ups","Cant mark service" ,  "error" );
 
-        console.log("Error login");
     }
     return null;
 };
@@ -423,7 +430,7 @@ export const getUserArchive = async () =>{
 
     }catch (e) {
         console.log(e);
-        console.log("Error login");
+
     }
     return null;
 };
@@ -460,12 +467,13 @@ export const deletePurchase = async (id) =>{
     try {
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.delete("checkout/purchase/" + id ,{headers});
-        console.log(res);
+        swal ("Ok","Order removed" ,  "success" );
         return res.data;
 
     }catch (e) {
         console.log(e);
-        console.log("Error login");
+        swal ("Ups","Something went wrong" , "error" );
+
     }
     return null;
 };
@@ -475,11 +483,13 @@ export const deletePurchaseEvent = async (id) =>{
         const headers = {'Authorization':localStorage.getItem(ACCESS_TOKEN) };
         const res =await apiClient.delete("checkout/" + id ,{headers});
         console.log(res);
+        swal ("Ok","Event canceled" ,  "success" );
         return res.data;
 
     }catch (e) {
         console.log(e);
-        console.log("Error login");
+        swal ("Ups","Something went wrong" , "error" );
+
     }
     return null;
 };

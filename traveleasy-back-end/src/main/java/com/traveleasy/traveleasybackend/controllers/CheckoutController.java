@@ -95,12 +95,15 @@ public class CheckoutController {
 
             archiveEntity.setEvent_start_date(eventEntity.getStart_date());
             purchaseEntity.setStart_date(eventEntity.getStart_date());
+
             archiveEntity.setEvent_start_time(eventEntity.getStart_time());
             purchaseEntity.setStart_time(eventEntity.getStart_time());
+
             archiveEntity.setEvent_end_date(eventEntity.getEnd_date());
             purchaseEntity.setEnd_date(eventEntity.getEnd_date());
+
             archiveEntity.setEvent_end_time(eventEntity.getEnd_time());
-            purchaseEntity.setEnd_date(eventEntity.getEnd_time());
+            purchaseEntity.setEnd_time(eventEntity.getEnd_time());
 
             archiveEntity.setEvent_people_count(eventEntity.getPeople_count());
             purchaseEntity.setPeople_count(eventEntity.getPeople_count());

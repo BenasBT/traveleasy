@@ -5,7 +5,6 @@ import AdminCategories from "./AdminCategories";
 export default function AdminPage() {
     return(
         <div>
-            <p>Admin Page</p>
             <AdminServices/>
             <AdminCategories/>
         </div>

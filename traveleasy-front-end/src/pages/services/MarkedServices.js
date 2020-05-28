@@ -8,6 +8,8 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import AppBar from "@material-ui/core/AppBar";
+import {Typography} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
 
@@ -78,8 +80,11 @@ export default function MarkedServices() {
     }
     return(
         <div className={classes.center}>
-            <p>Marked:</p>
-
+            <AppBar position={"relative"}>
+                <Typography align="center" variant="h6" >
+                    Marked:
+                </Typography>
+            </AppBar>
             <List className={classes.root} subheader={<li />}>
                 {services ? mappedServices : null}
             </List>

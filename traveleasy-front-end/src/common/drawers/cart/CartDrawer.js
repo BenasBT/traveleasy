@@ -77,7 +77,6 @@ export default function CartDrawer ({open,handleClose,events,deleteEvent,editEve
 
     };
     let openCheckout = (e) => {
-
         setCheckoutOpen(true);
     };
 

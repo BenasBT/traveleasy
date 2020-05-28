@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
         display:'block',
         marginLeft:'auto',
         marginRight:'auto',
-        width: '25%',
+        MaxWidth: '200',
         borderRadius: 50,
         height: 'auto',
 

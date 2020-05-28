@@ -66,7 +66,7 @@ export default function Checkout({events, open, handleClose,deleteEvents,price})
             ccv_cvc:ccv
 
         };
-
+        console.log(checkoutRequest);
         sendCheckout(checkoutRequest).then(
             deleteEvents(e)
         );

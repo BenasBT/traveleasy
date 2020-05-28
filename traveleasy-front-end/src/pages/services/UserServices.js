@@ -9,6 +9,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import {useSelector} from "react-redux";
+import AppBar from "@material-ui/core/AppBar";
+import {Typography} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
 
@@ -17,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.paper,
         position: 'relative',
         overflow: 'auto',
-        maxHeight: 400,
+        maxHeight: 800,
 
     },
     listSection: {
@@ -89,7 +91,6 @@ export default function UserServices() {
 
     return(
         <div className={classes.center}>
-            <p>Services:</p>
 
                 <List className={classes.root} subheader={<li />}>
                     {services ? mappedServices : null}

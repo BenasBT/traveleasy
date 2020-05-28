@@ -12,6 +12,15 @@ import EditEvent from "../../components/event/EditEvent";
 import {setUser} from "../../redux/actions"; // webpack must be configured to do this
 import {setCalendarAction} from '../../redux/actions/index';
 
+const useStyles = makeStyles((theme) => ({
+
+    calendar:{
+        maxWidth: 800,
+        margin:"auto"
+    }
+
+}));
+
 export default function Scheduler() {
 
     let {id} = useParams();
@@ -28,7 +37,7 @@ export default function Scheduler() {
 
     // const [calendar, setCalendar] = useState(null);
     const calendar = useSelector(state => state.calendarReducer);
-
+    const classes = useStyles();
 
     let parseEvents = (events) =>{
 
@@ -185,9 +194,12 @@ export default function Scheduler() {
     let fullCalendar = (events) => {
         //REDUX
         dispatch(setCalendarAction(
-            <FullCalendar defaultView="dayGridMonth" plugins={[ dayGridPlugin ]}
-                          events={events} eventClick={eventClick}
-            />));
+            <div className={classes.calendar}>
+                <FullCalendar  defaultView="dayGridMonth" plugins={[ dayGridPlugin ]}
+                               events={events} eventClick={eventClick}
+                />
+            </div>));
+
     };
 
     let Calendar = () =>{
@@ -195,8 +207,6 @@ export default function Scheduler() {
     };
     return(
         <div>
-            <p>Scheduler</p>
-
 
             {calendar}
 

@@ -35,6 +35,10 @@ const useStyles = makeStyles(theme => ({
     title: {
         flexGrow: 1,
     },
+    calendar:{
+        maxWidth: 800,
+        margin:"auto"
+    }
 }));
 
 export default function Header(){
@@ -167,13 +171,16 @@ export default function Header(){
     };
 
 
+
     let fullCalendar = (events) => {
         //REDUX
         if (typeof calendar.props !== "undefined") {
             dispatch(setCalendarAction(
-                <FullCalendar defaultView="dayGridMonth" plugins={[dayGridPlugin]}
-                              events={events} eventClick={calendar.props.eventClick}
-                />));
+                <div className={classes.calendar}>
+                    <FullCalendar defaultView="dayGridMonth" plugins={[dayGridPlugin]}
+                                  events={events} eventClick={calendar.props.eventClick}
+                    />
+                </div>));
         }
     };
 
@@ -185,7 +192,7 @@ export default function Header(){
             service:event.service,
 
             fixed_date:event.fixed_date,
-            start_date: event.start_date,
+            start_date:event.start_date,
             start_time:event.start_time,
 
             end_date:event.end_date,

@@ -21,6 +21,7 @@ import {
 import Grid from "@material-ui/core/Grid";
 import FormGroup from "@material-ui/core/FormGroup";
 import {ExpandLess, ExpandMore} from "@material-ui/icons";
+import AppBar from "@material-ui/core/AppBar";
 
 const useStyles = makeStyles((theme) => ({
 
@@ -283,9 +284,13 @@ export default function MyOrders() {
 
     return (
         <div>
-            <p>My Orders: </p>
+            <AppBar position={"relative"}>
+                <Typography align="center" variant="h6" >
+                    My Orders
+                </Typography>
+            </AppBar>
             <List className={classes.root} subheader={<li />}>
-                {orders.length > 0 ? mappedOrders() : <p>test</p>}
+                {orders.length > 0 ? mappedOrders() : null}
 
             </List>
         </div>

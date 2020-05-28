@@ -12,6 +12,8 @@ import {Card, CardContent, Collapse, Typography} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import {ExpandLess, ExpandMore} from "@material-ui/icons";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
 
 const useStyles = makeStyles((theme) => ({
 
@@ -157,7 +159,11 @@ export default function Archive() {
     }
     return(
         <div className={classes.center}>
-            <p>Archive:</p>
+            <AppBar position={"relative"}>
+                <Typography align="center" variant="h6" >
+                    Archive
+                </Typography>
+            </AppBar>
 
             <List className={classes.root} subheader={<li />}>
                 {archive ? mappedArchive : null}

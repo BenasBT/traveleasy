@@ -11,6 +11,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import {Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Typography} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import FormGroup from "@material-ui/core/FormGroup";
+import AppBar from "@material-ui/core/AppBar";
 
 const useStyles = makeStyles((theme) => ({
 
@@ -206,9 +207,13 @@ export default function ManagedEvents() {
 
     return (
         <div>
-            <p>Managed Events: </p>
+            <AppBar position={"relative"}>
+                <Typography align="center" variant="h6" >
+                    Managed Events
+                </Typography>
+            </AppBar>
             <List className={classes.root} subheader={<li />}>
-                {events.length > 0 ? mappedEvents() : <p>test</p>}
+                {events.length > 0 ? mappedEvents() : null}
 
             </List>
         </div>

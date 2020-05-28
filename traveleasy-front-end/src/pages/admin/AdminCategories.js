@@ -11,6 +11,7 @@ import Filter from "../../common/drawers/filter/Filter";
 import {useSelector} from "react-redux";
 import {Button, Card, CardActionArea, CardActions, CardContent, Typography} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
+import AppBar from "@material-ui/core/AppBar";
 
 const useStyles = makeStyles((theme) => ({
 
@@ -238,7 +239,11 @@ export default function AdminCategories() {
 
     return(
         <div className={classes.center}>
-            <p>Caetegories:</p>
+            <AppBar position={"relative"}>
+                <Typography align="center" variant="h6" >
+                    Caetegories
+                </Typography>
+            </AppBar>
 
             <List className={classes.root} subheader={<li />}>
                 {categories ? mapCategories() : null}

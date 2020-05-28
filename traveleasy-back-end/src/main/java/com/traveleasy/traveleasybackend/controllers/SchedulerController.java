@@ -2,8 +2,10 @@ package com.traveleasy.traveleasybackend.controllers;
 
 import com.traveleasy.traveleasybackend.models.PriceTypes;
 import com.traveleasy.traveleasybackend.models.entities.EventEntity;
+import com.traveleasy.traveleasybackend.models.entities.PurchaseEntity;
 import com.traveleasy.traveleasybackend.models.entities.ServiceEntity;
 import com.traveleasy.traveleasybackend.repositories.EventRepository;
+import com.traveleasy.traveleasybackend.repositories.PurchaseRepository;
 import com.traveleasy.traveleasybackend.repositories.ServiceRepository;
 import com.traveleasy.traveleasybackend.repositories.UserRepository;
 import com.traveleasy.traveleasybackend.security.CurrentUser;
@@ -44,6 +46,9 @@ public class SchedulerController {
 
     @Autowired
     ServiceRepository serviceRepository;
+
+    @Autowired
+    PurchaseRepository purchaseRepository;
 
     DateFormat timeFormat = new SimpleDateFormat("HH:mm");
     DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -161,6 +166,103 @@ public class SchedulerController {
         return true;
     }
 
+    private boolean valideteWithPurchases(EventEntity newEvent){
+        log.error("{}",newEvent);
+        List<PurchaseEntity> purchaseEntities = purchaseRepository.findAllByService(newEvent.getService());
+        for(PurchaseEntity event : purchaseEntities) {
+
+                if (newEvent.isFixed_date()) {
+                    //simple check when date is fixed
+                    if (dateFormat.format(event.getStart_date())
+                            .equals(dateFormat.format(newEvent.getStart_date()))) {
+                        log.error("This Date is taken fixed event {}", newEvent.getStart_date());
+                        return false;
+
+                    }else if(event.getEnd_date() != null){
+
+                        if(newEvent.getStart_date().compareTo(event.getEnd_date()) <= 0
+                                && newEvent.getStart_date().compareTo(event.getStart_date()) >= 0){
+                            log.error("Event exists during this time");
+                            return false;
+                        }
+                    }else if (newEvent.getEnd_date() != null){
+                        if(event.getStart_date().compareTo(newEvent.getEnd_date()) <= 0
+                                && event.getStart_date().compareTo(newEvent.getStart_date()) >= 0){
+                            log.error("A fixed event exists during this time");
+                            return false;
+                        }
+                    }
+                } else {
+                    if (newEvent.getEnd_date() == null) {
+                        if (dateFormat.format(event.getStart_date())
+                                .equals(dateFormat.format(newEvent.getStart_date()))) {
+
+                            if (event.getStart_time() != null && event.getEnd_time() != null) {
+                                if (newEvent.getStart_time().compareTo(event.getEnd_time()) <= 0
+                                        && newEvent.getEnd_time().compareTo(event.getStart_time()) >= 0) {
+                                    //this time is taken
+                                    log.error("This Time is taken {} -- {} for {} {} -- {}",
+                                            newEvent.getStart_time(), newEvent.getEnd_time(),
+                                            event.getId(),event.getStart_date(), event.getEnd_date());
+
+                                    return false;
+                                }
+                            }
+                        }
+                    }else if((newEvent.getStart_date().compareTo(event.getEnd_date()) <= 0
+                            && newEvent.getStart_date().compareTo(event.getStart_date()) >= 0)
+                            || dateFormat.format(newEvent.getStart_date())
+                            .equals(dateFormat.format(event.getEnd_date())) ){
+
+                        log.error("New Event starts during old event");
+                        return !CompareEventTimesWithPurchase(newEvent, event);
+
+                    }else if( (newEvent.getEnd_date().compareTo(event.getEnd_date()) <= 0
+                            && newEvent.getEnd_date().compareTo(event.getStart_date()) >= 0)
+                            || dateFormat.format(newEvent.getEnd_date())
+                            .equals(dateFormat.format(event.getStart_date()))){
+
+                        log.error("New Event ends during old event");
+                        return !CompareEventTimesWithPurchase(newEvent, event);
+
+                    }else if(newEvent.getStart_date().compareTo(event.getStart_date()) < 0
+                            && newEvent.getEnd_date().compareTo(event.getEnd_date()) > 0){
+
+                        log.error("Event exists during selected time");
+                        return false;
+                    }
+
+                }
+
+        }
+
+        return true;
+    }
+
+    private boolean CompareEventTimesWithPurchase(EventEntity newEvent, PurchaseEntity purchase) {
+        if(dateFormat.format(newEvent.getStart_date())
+                .equals(dateFormat.format(purchase.getEnd_date()))){
+            log.error("New Event starts at the same date as old event ends" );
+            log.error("time {}",newEvent.getStart_time().compareTo(purchase.getEnd_time()));
+            if(newEvent.getStart_time().compareTo(purchase.getEnd_time()) > 0){
+                log.error("New event starts after old one ends");
+                return false;
+            }
+            log.error("New event starts before old one ends");
+        }else if(dateFormat.format(newEvent.getEnd_date())
+                .equals(dateFormat.format(purchase.getStart_date()))){
+
+            log.error("New Event ends at the same date as old event starts");
+            log.error("time {}",newEvent.getStart_time().compareTo(purchase.getEnd_time()));
+            if(newEvent.getEnd_time().compareTo(purchase.getStart_time()) < 0){
+                log.error("New event ends before old one starts");
+                return false;
+            }
+            log.error("New event ends after old one starts");
+        }
+        return true;
+    }
+
     private boolean CompareEventTimes(EventEntity newEvent, EventEntity event) {
         if(dateFormat.format(newEvent.getStart_date())
                 .equals(dateFormat.format(event.getEnd_date()))){
@@ -252,7 +354,7 @@ public class SchedulerController {
         eventEntity.setPrice_counter(jsonObject.getDouble("price_counter"));
 
 
-        if(!validate(eventEntity)) {
+        if(!valideteWithPurchases(eventEntity)) {
             return new ResponseEntity<>("Event time is taken" , HttpStatus.CONFLICT);
         }
         if(eventEntity.getStart_date() != null && !jsonObject.getString("start_date").equals("")) {

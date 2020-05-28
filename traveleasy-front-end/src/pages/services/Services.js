@@ -181,7 +181,6 @@ export default function Services() {
 
     return(
         <div className={classes.center}>
-            <p>Services:</p>
 
             <List className={classes.root} subheader={<li />}>
                 {services ? mapServices() : null}

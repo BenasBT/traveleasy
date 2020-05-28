@@ -119,6 +119,8 @@ export default function Service({service,servicesState,ps,fs,CheckUserClicked,ma
 
     let onMarkClick = (event,id) =>{
         event.preventDefault();
+        console.log(id);
+        console.log("marking");
         markService(id).then(r => console.log(r));
 
     };

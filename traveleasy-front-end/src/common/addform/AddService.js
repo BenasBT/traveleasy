@@ -1,4 +1,4 @@
-import React , {useState} from "react";
+import React, {useEffect, useState} from "react";
 import MyModal from "../../components/modal";
 import {Button, Card, CardActionArea, CardActions, CardContent, Typography} from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
@@ -10,8 +10,9 @@ import Checkbox from "@material-ui/core/Checkbox";
 import DropZone from "../../components/dropzone/DropZone";
 import Grid from "@material-ui/core/Grid";
 import {makeStyles} from "@material-ui/core/styles";
-import {addServiceToEvents} from "../../utils/APIUtils";
+import {addServiceToEvents, getAllCategories, getPriceTypes} from "../../utils/APIUtils";
 import swal from 'sweetalert';
+import MenuItem from "@material-ui/core/MenuItem";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -165,6 +166,8 @@ export default function AddService({open,handleClose,service}) {
 
         let serviceStartDate = new Date(service.start_date);
         let serviceEndDate = new Date(service.end_date);
+        let now = new Date();
+            now.setHours(0,0,0,0);
         let inputDate;
 
         switch(inputId) {
@@ -232,6 +235,18 @@ export default function AddService({open,handleClose,service}) {
                     });
 
                 }else if(inputValue !== ""
+                && serviceStartDate.getTime() !== 0
+                && inputDate.getTime() < now.getTime()){
+
+                    console.log(inputDate.getTime());
+                    console.log(now.getTime());
+
+                setSDateCorrect({
+                    status: true,
+                    message: `Event can't start before current date`
+                })
+                }
+                else if(inputValue !== ""
                     && serviceEndDate.getTime() !== 0
                     && inputDate.getTime() > serviceEndDate.getTime()){
 
@@ -323,6 +338,15 @@ export default function AddService({open,handleClose,service}) {
                         message: `Service Starts at ${service.start_date}`
                     });
 
+                }
+                else if(inputValue !== ""
+                    && serviceStartDate.getTime() !== 0
+                    && inputDate.getTime() < now.getTime()){
+
+                    setEDateCorrect({
+                        status: true,
+                        message: `Event can't end before current date`
+                    })
                 }else if(inputValue !== ""
                     && eDate !== ""
                     && serviceEndDate.getTime() !== 0
@@ -409,7 +433,10 @@ export default function AddService({open,handleClose,service}) {
                message: `Service Start Date Cant be empty`
            });
            return true
-       }else {
+       }else if(priceCounter === ""){
+           return true;
+       }
+       else {
 
            return false;
        }
@@ -417,7 +444,12 @@ export default function AddService({open,handleClose,service}) {
 
 
     };
+    useEffect(() => {
+        if (service.price_type !== "UNIT" && service.price_type !== "KM"){
+            setPriceCounter(0);
+        }
 
+    }, [service.price_type]);
     return(
         <MyModal modalHeader={`Adding ${service.name} to events`} open={open} handleClose={handleClose}>
         <Card>
@@ -446,6 +478,7 @@ export default function AddService({open,handleClose,service}) {
                         type={"number"}
                         label="Kilometer Count"
                         value={priceCounter}
+                        error={priceCounter === ""}
                         onChange={(event) => onChange(event)}
                         />
                         : null}
@@ -455,6 +488,7 @@ export default function AddService({open,handleClose,service}) {
                                    type={"number"}
                                    label="Unit Count"
                                    value={priceCounter}
+                                   error={priceCounter === ""}
                                    onChange={(event) => onChange(event)}
                         />
                         : null}

@@ -183,8 +183,6 @@ export default function AdminServices() {
 
     return(
         <div className={classes.center}>
-            <p>Services:</p>
-
             <List className={classes.root} subheader={<li />}>
                 {services ? mapServices() : null}
             </List>
